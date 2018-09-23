@@ -19,7 +19,6 @@ public class MainActivity extends AppCompatActivity {
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
 
-
     }
 
 
