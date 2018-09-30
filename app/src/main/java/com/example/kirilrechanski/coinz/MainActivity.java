@@ -26,7 +26,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener{
     private MapView mapView;
     private MapboxMap map;
-    private PermissionsManager permissionsManager1;
+    private PermissionsManager permissionsManager;
     private LocationEngine locationEngine;
     private LocationLayerPlugin locationLayerPlugin;
     private Location originLocation;
