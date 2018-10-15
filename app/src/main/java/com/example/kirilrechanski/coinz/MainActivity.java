@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final String TAG = "EmailPassword";
 
+
     private TextView mStatusTextView;
     private TextView mDetailTextView;
     private EditText mEmailField;
@@ -95,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
+                            Toast.makeText(MainActivity.this, "Successfully created an account!",
+                                    Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -110,6 +113,8 @@ public class MainActivity extends AppCompatActivity implements
                 });
         // [END create_user_with_email]
     }
+
+
 
     private void signIn(String email, String password) {
         Log.d(TAG, "signIn:" + email);

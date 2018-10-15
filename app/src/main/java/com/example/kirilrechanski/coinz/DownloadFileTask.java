@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 public class DownloadFileTask extends AsyncTask<String, Void, String> {
 
     @Override
-    protected String doInBackground(String... strings) {
+    protected String doInBackground(String... urls) {
         try {
-            return loadFileFromNetwork("http://homepages.inf.ed.ac.uk/stg/coinz/2018/01/01/coinzmap.geojson");
+            return loadFileFromNetwork(urls[0]);
         } catch (IOException e) {
             return "Unable to load content. Check your network connection";
         }
@@ -51,5 +51,6 @@ public class DownloadFileTask extends AsyncTask<String, Void, String> {
         super.onPostExecute(result);
         DownloadCompleteRunner.downloadComplete(result);
     }
+
 } // end class DownloadFileTask
 
