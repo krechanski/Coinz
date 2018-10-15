@@ -20,8 +20,8 @@ public class DownloadCompleteRunner {
        List of feature and list of coordinates. Start looping through each feature and save its geometry, coordinates,
        value and currency. After each iteration place a marker on the map with the title, snippet, position and rounded
        to %.2f value.
-
      */
+
     public static void downloadComplete(String result) {
         DownloadCompleteRunner.result = result;
         geoJsonString = result;
