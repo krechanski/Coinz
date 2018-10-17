@@ -1,21 +1,13 @@
 package com.example.kirilrechanski.coinz;
 
+import android.content.Intent;
 import android.location.Location;
-import android.nfc.Tag;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.example.kirilrechanski.coinz.R;
-import com.mapbox.geojson.BoundingBox;
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.GeoJson;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -30,23 +22,11 @@ import com.mapbox.android.core.location.LocationEngineProvider;
 import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
-import org.jetbrains.annotations.Async;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import timber.log.Timber;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener{
     private MapView mapView;
@@ -93,7 +73,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         //Start downloading the map of the day
         DownloadFileTask downloadFileTask = new DownloadFileTask();
         downloadFileTask.execute(url);
-
 
     }
     @SuppressWarnings( {"MissingPermission"})
