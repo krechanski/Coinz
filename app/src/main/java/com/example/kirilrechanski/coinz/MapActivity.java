@@ -38,9 +38,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

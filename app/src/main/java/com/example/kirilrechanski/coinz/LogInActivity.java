@@ -122,7 +122,6 @@ public class LogInActivity extends AppCompatActivity implements
             return;
         }
 
-
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
