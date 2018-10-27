@@ -5,6 +5,7 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
@@ -39,8 +40,19 @@ public class DownloadCompleteRunner {
                 String currency = property.get("currency").toString();
                 Double value = Math.round(property.get("value").getAsDouble()*100)/100.0;
                 MarkerOptions markerOptions = new MarkerOptions();
-                MapActivity.map.addMarker(markerOptions.title(currency).snippet(value.toString())
-                        .position(new LatLng(coordinates.get(1), coordinates.get(0))));
+
+
+                switch (currency) {
+                    case "\"SHIL\"":
+                        MapActivity.map.addMarker(markerOptions.title(currency)
+                                .snippet(value.toString())
+                                .position(new LatLng(coordinates.get(1), coordinates.get(0)))
+                                .icon(MapActivity.markerShil));
+                        default: MapActivity.map.addMarker(markerOptions.title(currency)
+                                .snippet(value.toString())
+                                .position(new LatLng(coordinates.get(1), coordinates.get(0))));
+                }
+
             }
 
 

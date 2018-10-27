@@ -1,13 +1,18 @@
 package com.example.kirilrechanski.coinz;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -38,6 +43,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
+    static Icon markerShil;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +68,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map = mapboxMap;
         enableLocationPlugin();
 
+        markerShil = getIcon(R.drawable.green_marker);
+
 
         //Get the current date
         Date date = new Date();
@@ -72,6 +81,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         downloadFileTask.execute(url);
 
     }
+
+
+    // Fetches the custom marker icon image from drawable
+    private Icon getIcon(int resource) {
+        IconFactory iconFactory = IconFactory.getInstance(MapActivity.this);
+        BitmapDrawable iconDrawable = (BitmapDrawable) ResourcesCompat.getDrawable(getResources(), resource, null);
+        assert iconDrawable != null;
+        Bitmap bitmap = iconDrawable.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
+        Icon icon = iconFactory.fromBitmap(smallMarker);
+        return icon;
+    }
+
     @SuppressWarnings( {"MissingPermission"})
     private void enableLocationPlugin() {
         // Check if permissions are enabled and if not request
