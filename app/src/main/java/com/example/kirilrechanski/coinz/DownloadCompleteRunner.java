@@ -44,7 +44,7 @@ public class DownloadCompleteRunner {
 
                 // Place custom markers on the currencies
                 switch (currency) {
-                    case "\"DLR\"":
+                    case "\"DOLR\"":
                         MapActivity.map.addMarker(markerOptions.title(currency)
                                 .snippet(value.toString())
                                 .position(new LatLng(coordinates.get(1), coordinates.get(0)))
