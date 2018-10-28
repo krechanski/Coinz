@@ -42,15 +42,36 @@ public class DownloadCompleteRunner {
                 MarkerOptions markerOptions = new MarkerOptions();
 
 
+                // Place custom markers on the currencies
                 switch (currency) {
+                    case "\"DLR\"":
+                        MapActivity.map.addMarker(markerOptions.title(currency)
+                                .snippet(value.toString())
+                                .position(new LatLng(coordinates.get(1), coordinates.get(0)))
+                                .icon(MapActivity.markerDLR));
+                        break;
+
                     case "\"SHIL\"":
                         MapActivity.map.addMarker(markerOptions.title(currency)
                                 .snippet(value.toString())
                                 .position(new LatLng(coordinates.get(1), coordinates.get(0)))
-                                .icon(MapActivity.markerShil));
-                        default: MapActivity.map.addMarker(markerOptions.title(currency)
+                                .icon(MapActivity.markerSHIL));
+                        break;
+
+                    case "\"PENY\"":
+                        MapActivity.map.addMarker(markerOptions.title(currency)
                                 .snippet(value.toString())
-                                .position(new LatLng(coordinates.get(1), coordinates.get(0))));
+                                .position(new LatLng(coordinates.get(1), coordinates.get(0)))
+                                .icon(MapActivity.markerPENY));
+                        break;
+
+                    case "\"QUID\"":
+                        MapActivity.map.addMarker(markerOptions.title(currency)
+                                .snippet(value.toString())
+                                .position(new LatLng(coordinates.get(1), coordinates.get(0)))
+                                .icon(MapActivity.markerQUID));
+                        break;
+
                 }
 
             }

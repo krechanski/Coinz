@@ -43,7 +43,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
-    static Icon markerShil;
+
+    //Initialize custom icons
+    static Icon markerDLR;
+    static Icon markerSHIL;
+    static Icon markerPENY;
+    static Icon markerQUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +73,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map = mapboxMap;
         enableLocationPlugin();
 
-        markerShil = getIcon(R.drawable.green_marker);
+        //Get the custom marker images
+        markerDLR = getIcon(R.drawable.green_marker);
+        markerSHIL = getIcon(R.drawable.blue_marker);
+        markerPENY = getIcon(R.drawable.red_marker);
+        markerQUID = getIcon(R.drawable.yellow_marker);
 
 
         //Get the current date
