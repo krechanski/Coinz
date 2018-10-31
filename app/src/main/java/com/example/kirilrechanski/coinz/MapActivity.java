@@ -77,6 +77,14 @@ public class MapActivity extends AppCompatActivity implements
     static Icon markerPENY;
     static Icon markerQUID;
 
+
+    //Exchange rates for coins
+    static double DLRrate;
+    static double SHILrate;
+    static double PENYrate;
+    static double QUIDrate;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -206,8 +214,6 @@ public class MapActivity extends AppCompatActivity implements
             }
 
         }
-
-
 
     }
 

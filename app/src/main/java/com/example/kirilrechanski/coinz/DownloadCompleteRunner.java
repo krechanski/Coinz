@@ -11,6 +11,9 @@ import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.FileOutputStream;
 import java.util.List;
 
@@ -34,6 +37,18 @@ public class DownloadCompleteRunner {
         //Save the coinzMap if it hasn't been already
         if (MapActivity.mapDownloaded == false) {
             saveFile(result);
+        }
+
+        //Extracting the exchange rate for every coin
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            JSONObject rates = jsonObject.getJSONObject("rates");
+            MapActivity.DLRrate = rates.getDouble("DOLR");
+            MapActivity.PENYrate = rates.getDouble("PENY");
+            MapActivity.QUIDrate = rates.getDouble("QUID");
+            MapActivity.SHILrate = rates.getDouble("SHIL");
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
 
