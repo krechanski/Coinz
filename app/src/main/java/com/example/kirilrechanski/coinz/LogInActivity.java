@@ -67,6 +67,10 @@ public class LogInActivity extends AppCompatActivity implements
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
+
+        if(mAuth.getCurrentUser()!=null) {
+            startActivity(new Intent(getApplicationContext(),MapActivity.class));
+        }
     }
 
     // [START on_start_check_user]

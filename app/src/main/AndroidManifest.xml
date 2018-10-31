@@ -25,12 +25,13 @@
         <activity android:name=".LogInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MapActivity" /><![CDATA[
-        android:exported="true>
-        ]]>
+        <activity android:name=".MapActivity"
+            android:label="Coinz"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
