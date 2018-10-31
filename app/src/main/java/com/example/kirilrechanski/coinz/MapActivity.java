@@ -1,6 +1,8 @@
 package com.example.kirilrechanski.coinz;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
@@ -13,6 +15,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -35,19 +38,35 @@ import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MapActivity extends AppCompatActivity implements
         OnMapReadyCallback, LocationEngineListener, PermissionsListener, NavigationView.OnNavigationItemSelectedListener{
+
+    private final String tag = "MapActivity";
+    private final String preferencesFile = "MyPrefsFile"; //For storing preferences
+
     private MapView mapView;
     static MapboxMap map;
+    static Boolean mapDownloaded = false;
     private PermissionsManager permissionsManager;
     private LocationEngine locationEngine;
     private LocationLayerPlugin locationLayerPlugin;
     private Location originLocation;
+    private String downloadDate = ""; //Format: yyy/mm/dd
+
+
+
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
@@ -163,10 +182,42 @@ public class MapActivity extends AppCompatActivity implements
         String currentDate = dateFormat.format(date);
         String url = "http://homepages.inf.ed.ac.uk/stg/coinz/"+ currentDate +"/coinzmap.geojson";
 
-        //Start downloading the map of the day
-        DownloadFileTask downloadFileTask = new DownloadFileTask();
-        downloadFileTask.execute(url);
 
+
+        //Start downloading the map if the download date is different than the current one
+        if (!downloadDate.equals(currentDate)) {
+            DownloadFileTask downloadFileTask = new DownloadFileTask();
+            downloadDate = currentDate;
+            downloadFileTask.execute(url);
+        }
+
+
+        //If the map is already downloaded locally, read it and call DownloadCompleteRunner
+        else {
+            mapDownloaded = true;
+            String geoJsonString = "";
+            try {
+                FileInputStream fileInputStream = openFileInput("coinzmap.geojson");
+                geoJsonString = readStream(fileInputStream);
+                DownloadCompleteRunner.downloadComplete(geoJsonString);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
+
+    }
+
+    //Read input file used to read coinzmap.geojson
+    @NonNull
+    private String readStream(InputStream stream)
+            throws IOException {
+        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(stream))) {
+            return buffer.lines().collect(Collectors.joining("\n"));
+        }
     }
 
 
@@ -269,6 +320,13 @@ public class MapActivity extends AppCompatActivity implements
         if (locationLayerPlugin != null) {
             locationLayerPlugin.onStart();
         }
+
+        // Restore preferences
+        SharedPreferences settings = getSharedPreferences(preferencesFile,
+                Context.MODE_PRIVATE);
+        // use ”” as the default value (this might be the first time the app is run)
+        downloadDate = settings.getString("lastDownloadDate", "");
+        Log.d(tag, "[onStart] Recalled lastDownloadDate is ’" + downloadDate + "’");
     }
 
     @Override
@@ -286,10 +344,18 @@ public class MapActivity extends AppCompatActivity implements
     @Override
     protected void onStop() {
         super.onStop();
-        mapView.onStop();
         if (locationLayerPlugin != null) {
             locationLayerPlugin.onStart();
         }
+
+
+        SharedPreferences settings = getSharedPreferences(preferencesFile,
+                Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("lastDownloadDate", downloadDate);
+        editor.apply();
+        mapView.onStop();
     }
 
     @Override

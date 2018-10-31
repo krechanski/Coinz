@@ -1,5 +1,7 @@
 package com.example.kirilrechanski.coinz;
 
+import android.content.Context;
+
 import com.google.gson.JsonObject;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
@@ -9,7 +11,10 @@ import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import java.io.FileOutputStream;
 import java.util.List;
+
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 
 public class DownloadCompleteRunner {
     static String result;
@@ -25,6 +30,12 @@ public class DownloadCompleteRunner {
     public static void downloadComplete(String result) {
         DownloadCompleteRunner.result = result;
         geoJsonString = result;
+
+        //Save the coinzMap if it hasn't been already
+        if (MapActivity.mapDownloaded == false) {
+            saveFile(result);
+        }
+
 
         FeatureCollection featureCollection = FeatureCollection.fromJson(geoJsonString);
         List<Feature> features;
@@ -78,5 +89,18 @@ public class DownloadCompleteRunner {
 
 
         }
+    }
+
+
+    public static void saveFile(String currentMap) {
+        FileOutputStream outputStream;
+        try {
+            outputStream = getApplicationContext().openFileOutput("coinzmap.geojson", Context.MODE_PRIVATE);
+            outputStream.write(currentMap.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
