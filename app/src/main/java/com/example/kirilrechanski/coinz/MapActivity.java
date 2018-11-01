@@ -156,11 +156,6 @@ public class MapActivity extends AppCompatActivity implements
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -193,7 +188,6 @@ public class MapActivity extends AppCompatActivity implements
         markerSHIL = getIcon(R.drawable.blue_marker);
         markerPENY = getIcon(R.drawable.red_marker);
         markerQUID = getIcon(R.drawable.yellow_marker);
-
 
         //Get the current date
         Date date = new Date();

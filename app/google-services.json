@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "597508046348-llcricppr1gdt6jvi2nhp5bs69fvq7c7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.kirilrechanski.coinz",
+            "certificate_hash": "06063e7948c7ac7b814e8d6bc9b1b26a943faeed"
+          }
+        },
+        {
+          "client_id": "597508046348-nisne19srpq7hm1rc230eq2a5ttk029f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.kirilrechanski.coinz",
+            "certificate_hash": "ccb69024313c5868124afa2fd16c2c34bfa7a458"
+          }
+        },
+        {
           "client_id": "597508046348-hu08tlu2drrt4d16ieos8bjqlf64emms.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +45,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "597508046348-hu08tlu2drrt4d16ieos8bjqlf64emms.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

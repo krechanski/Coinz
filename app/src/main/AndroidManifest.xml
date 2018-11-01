@@ -29,9 +29,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MapActivity"
+        <activity
+            android:name=".MapActivity"
             android:label="Coinz"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".UsernameActivity">
+        </activity>
     </application>
 
 </manifest>

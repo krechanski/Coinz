@@ -32,6 +32,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LogInActivity extends AppCompatActivity implements
         View.OnClickListener {
@@ -39,9 +41,11 @@ public class LogInActivity extends AppCompatActivity implements
     private static final String TAG = "EmailPassword";
 
 
+
     private TextView mStatusTextView;
     private EditText mEmailField;
     private EditText mPasswordField;
+
 
     // [START declare_auth]
     private FirebaseAuth mAuth;
@@ -51,7 +55,10 @@ public class LogInActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        // [START initialize_auth]
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+        // [END initialize_auth]
         // Views
         mStatusTextView = findViewById(R.id.status);
         mEmailField = findViewById(R.id.fieldEmail);
@@ -63,14 +70,10 @@ public class LogInActivity extends AppCompatActivity implements
         findViewById(R.id.signOutButton).setOnClickListener(this);
         findViewById(R.id.verifyEmailButton).setOnClickListener(this);
 
-        // [START initialize_auth]
-        // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
-        // [END initialize_auth]
-
-        if(mAuth.getCurrentUser()!=null) {
-            startActivity(new Intent(getApplicationContext(),MapActivity.class));
-        }
+        // IF CURRENT USER IS SAME DONT GO TO LOG IN
+//        if(currentUser!=null) {
+//            startActivity(new Intent(getApplicationContext(),MapActivity.class));
+//        }
     }
 
     // [START on_start_check_user]
@@ -78,7 +81,7 @@ public class LogInActivity extends AppCompatActivity implements
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+
     }
     // [END on_start_check_user]
 
@@ -96,21 +99,30 @@ public class LogInActivity extends AppCompatActivity implements
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "createUserWithEmail:success");
+                            Log.d("TESTING", "createUserWithEmail:success");
                             Toast.makeText(LogInActivity.this, "Successfully created an account!",
                                     Toast.LENGTH_SHORT).show();
-                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            FirebaseFirestore mDatabase = FirebaseFirestore.getInstance();
+                            mAuth = FirebaseAuth.getInstance();
+                            FirebaseUser currentUser = mAuth.getCurrentUser();
+
+                            if(currentUser != null) {
+                                mDatabase.collection("users").document(currentUser.getUid())
+                                        .set(new User(email));
+                            }
+                            startActivity(new Intent(LogInActivity.this, UsernameActivity.class));
+                            finish();
+
+
+
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Log.w("TESTING", "createUserWithEmail:failure", task.getException());
                             Toast.makeText(LogInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+
                         }
-
-                        // [START_EXCLUDE]
-
-                        // [END_EXCLUDE]
                     }
                 });
         // [END create_user_with_email]
@@ -133,9 +145,8 @@ public class LogInActivity extends AppCompatActivity implements
                             // Sign in success, update UI with the signed-in user's information
 
                             startActivity(new Intent(LogInActivity.this,MapActivity.class));
-//                            Log.d(TAG, "signInWithEmail:success");
-//                            FirebaseUser user = mAuth.getCurrentUser();
-//                            updateUI(user);
+                            finish();
+//                           
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -152,6 +163,8 @@ public class LogInActivity extends AppCompatActivity implements
                 });
         // [END sign_in_with_email]
     }
+
+
 
     private void signOut() {
         mAuth.signOut();
