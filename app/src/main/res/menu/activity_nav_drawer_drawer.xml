@@ -35,4 +35,14 @@
         </menu>
     </item>
 
+    <group
+        android:id="@+id/menu_bottom"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_signOut"
+            android:icon="@drawable/sign_out"
+            android:title="Sign out" >
+        </item>
+    </group>
 </menu>
