@@ -19,8 +19,8 @@ import java.util.Map;
 public class UsernameActivity extends AppCompatActivity {
 
     /*
-    The user sets his username and it is saved the the FireStore Database and it's
-    associated with his email address.
+    The user sets his username which is linked with his email
+    and it is saved in the FireStore Database.
      */
 
     private FirebaseAuth mAuth;
@@ -35,7 +35,6 @@ public class UsernameActivity extends AppCompatActivity {
                 FirebaseFirestore mDatabase = FirebaseFirestore.getInstance();
                 mAuth = FirebaseAuth.getInstance();
                 FirebaseUser currentUser = mAuth.getCurrentUser();
-
 
                 TextView username = findViewById(R.id.usernameField);
 

@@ -76,7 +76,11 @@ public class LogInActivity extends AppCompatActivity implements
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
+
+        // Skip login screen and go to the map if the currentUser hasn't logged out
+        if (mAuth.getCurrentUser()!= null) {
+            startActivity(new Intent(getApplicationContext(),MapActivity.class));
+        }
 
     }
     // [END on_start_check_user]
@@ -105,12 +109,11 @@ public class LogInActivity extends AppCompatActivity implements
 
                             if(currentUser != null) {
                                 mDatabase.collection("users").document(currentUser.getUid())
-                                        .set(new User(email));
+                                        .set(new User(email, 0,0));
+
                             }
                             startActivity(new Intent(LogInActivity.this, UsernameActivity.class));
                             finish();
-
-
 
                         } else {
                             // If sign in fails, display a message to the user.

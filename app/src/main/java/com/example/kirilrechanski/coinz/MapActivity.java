@@ -137,7 +137,7 @@ public class MapActivity extends AppCompatActivity implements
         email.setText(user.getEmail());
         navigationView.setNavigationItemSelectedListener(this);
 
-        //Set navDrawer name to user's Username
+        //Set the profile name in navDrawer to user's Username
         FirebaseFirestore mDatabase = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
