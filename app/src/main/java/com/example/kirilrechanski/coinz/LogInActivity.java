@@ -70,10 +70,6 @@ public class LogInActivity extends AppCompatActivity implements
         findViewById(R.id.signOutButton).setOnClickListener(this);
         findViewById(R.id.verifyEmailButton).setOnClickListener(this);
 
-        // IF CURRENT USER IS SAME DONT GO TO LOG IN
-//        if(currentUser!=null) {
-//            startActivity(new Intent(getApplicationContext(),MapActivity.class));
-//        }
     }
 
     // [START on_start_check_user]
@@ -119,7 +115,7 @@ public class LogInActivity extends AppCompatActivity implements
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TESTING", "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(LogInActivity.this, "Authentication failed.",
+                            Toast.makeText(LogInActivity.this, "Account does not exist in the databse.",
                                     Toast.LENGTH_SHORT).show();
 
                         }

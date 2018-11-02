@@ -22,8 +22,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
@@ -52,6 +58,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MapActivity extends AppCompatActivity implements
@@ -68,6 +75,7 @@ public class MapActivity extends AppCompatActivity implements
     private LocationLayerPlugin locationLayerPlugin;
     private Location originLocation;
     private String downloadDate = ""; //Format: yyy/mm/dd
+    private FirebaseAuth mAuth;
 
 
 
@@ -121,7 +129,7 @@ public class MapActivity extends AppCompatActivity implements
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
 
         //Set the navDrawer email to the user's email
         View headerView = navigationView.getHeaderView(0);
@@ -129,7 +137,28 @@ public class MapActivity extends AppCompatActivity implements
         email.setText(user.getEmail());
         navigationView.setNavigationItemSelectedListener(this);
 
-
+        //Set navDrawer name to user's Username
+        FirebaseFirestore mDatabase = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        String userID = currentUser.getUid();
+        DocumentReference docRef = mDatabase.collection("users").document(currentUser.getUid());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null) {
+                        String usernameGet = document.getString("username");
+                        TextView usernameNavDrawer = headerView.findViewById(R.id.navUsername);
+                        usernameNavDrawer.setText(usernameGet);
+                    }
+                    else {
+                        Log.d("Error", "get username failed with ", task.getException());
+                    }
+                }
+            }
+        });
     }
 
     @Override

@@ -18,6 +18,11 @@ import java.util.Map;
 
 public class UsernameActivity extends AppCompatActivity {
 
+    /*
+    The user sets his username and it is saved the the FireStore Database and it's
+    associated with his email address.
+     */
+
     private FirebaseAuth mAuth;
 
     @Override
