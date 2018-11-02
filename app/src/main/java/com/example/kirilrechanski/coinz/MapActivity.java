@@ -33,6 +33,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -64,8 +65,8 @@ import java.util.stream.Collectors;
 public class MapActivity extends AppCompatActivity implements
         OnMapReadyCallback, LocationEngineListener, PermissionsListener, NavigationView.OnNavigationItemSelectedListener{
 
-    private final String tag = "MapActivity";
-    private final String preferencesFile = "MyPrefsFile"; //For storing preferences
+    private final String TAG = "MapActivity";
+    private final String PREFERENCEFILE = "MyPrefsFile"; //For storing preferences
 
     private MapView mapView;
     static MapboxMap map;
@@ -236,7 +237,7 @@ public class MapActivity extends AppCompatActivity implements
         //If the map is already downloaded locally, read it and call DownloadCompleteRunner
         else {
             mapDownloaded = true;
-            String geoJsonString = "";
+            String geoJsonString;
             try {
                 FileInputStream fileInputStream = openFileInput("coinzmap.geojson");
                 geoJsonString = readStream(fileInputStream);
@@ -247,7 +248,6 @@ public class MapActivity extends AppCompatActivity implements
             }
 
         }
-
     }
 
     //Read input file used to read coinzmap.geojson
@@ -361,11 +361,11 @@ public class MapActivity extends AppCompatActivity implements
         }
 
         // Restore preferences
-        SharedPreferences settings = getSharedPreferences(preferencesFile,
+        SharedPreferences settings = getSharedPreferences(PREFERENCEFILE,
                 Context.MODE_PRIVATE);
         // use ”” as the default value (this might be the first time the app is run)
         downloadDate = settings.getString("lastDownloadDate", "");
-        Log.d(tag, "[onStart] Recalled lastDownloadDate is ’" + downloadDate + "’");
+        Log.d(TAG, "[onStart] Recalled lastDownloadDate is ’" + downloadDate + "’");
     }
 
     @Override
@@ -388,7 +388,7 @@ public class MapActivity extends AppCompatActivity implements
         }
 
 
-        SharedPreferences settings = getSharedPreferences(preferencesFile,
+        SharedPreferences settings = getSharedPreferences(PREFERENCEFILE,
                 Context.MODE_PRIVATE);
 
         SharedPreferences.Editor editor = settings.edit();

@@ -8,6 +8,7 @@ import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
@@ -35,7 +36,7 @@ public class DownloadCompleteRunner {
         geoJsonString = result;
 
         //Save the coinzMap if it hasn't been already
-        if (MapActivity.mapDownloaded == false) {
+        if (!MapActivity.mapDownloaded) {
             saveFile(result);
         }
 
@@ -103,7 +104,6 @@ public class DownloadCompleteRunner {
             }
         }
     }
-
 
     public static void saveFile(String currentMap) {
         FileOutputStream outputStream;
