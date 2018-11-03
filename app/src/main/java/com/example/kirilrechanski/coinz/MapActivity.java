@@ -63,10 +63,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MapActivity extends AppCompatActivity implements
-        OnMapReadyCallback, LocationEngineListener, PermissionsListener, NavigationView.OnNavigationItemSelectedListener{
+        OnMapReadyCallback, LocationEngineListener, PermissionsListener, NavigationView.OnNavigationItemSelectedListener {
 
     private final String TAG = "MapActivity";
     private final String PREFERENCEFILE = "MyPrefsFile"; //For storing preferences
+    private final float COLLECTING_DISTANCE = 25;
 
     private MapView mapView;
     static MapboxMap map;
@@ -77,8 +78,6 @@ public class MapActivity extends AppCompatActivity implements
     private Location originLocation;
     private String downloadDate = ""; //Format: yyy/mm/dd
     private FirebaseAuth mAuth;
-
-
 
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -113,7 +112,6 @@ public class MapActivity extends AppCompatActivity implements
         //Get the email of current user.
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
-
 
 
         mapView = findViewById(R.id.mapView);
@@ -153,8 +151,7 @@ public class MapActivity extends AppCompatActivity implements
                         String usernameGet = document.getString("username");
                         TextView usernameNavDrawer = headerView.findViewById(R.id.navUsername);
                         usernameNavDrawer.setText(usernameGet);
-                    }
-                    else {
+                    } else {
                         Log.d("Error", "get username failed with ", task.getException());
                     }
                 }
@@ -193,7 +190,7 @@ public class MapActivity extends AppCompatActivity implements
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
 
             case R.id.nav_signOut: {
                 FirebaseAuth.getInstance().signOut();
@@ -222,8 +219,7 @@ public class MapActivity extends AppCompatActivity implements
         //Get the current date
         Date date = new Date();
         String currentDate = dateFormat.format(date);
-        String url = "http://homepages.inf.ed.ac.uk/stg/coinz/"+ currentDate +"/coinzmap.geojson";
-
+        String url = "http://homepages.inf.ed.ac.uk/stg/coinz/" + currentDate + "/coinzmap.geojson";
 
 
         //Start downloading the map if the download date is different than the current one
@@ -246,8 +242,13 @@ public class MapActivity extends AppCompatActivity implements
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
+
+        //double resutl = getDistanceFromCurrentPosition(originLocation.getLatitude(), originLocation.getLongitude(), 55.9442, -3.1913);
+        //user coordinates: LAT:	55.9441, Long: -3.1913
+        //marker coordinates: LAT: 55.9442, Long: -3.1913
+        //float resutl: 11.131949
+        //double resut1: 11.131949424743652
     }
 
     //Read input file used to read coinzmap.geojson
@@ -271,7 +272,7 @@ public class MapActivity extends AppCompatActivity implements
         return icon;
     }
 
-    @SuppressWarnings( {"MissingPermission"})
+    @SuppressWarnings({"MissingPermission"})
     private void enableLocationPlugin() {
         // Check if permissions are enabled and if not request
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
@@ -290,9 +291,7 @@ public class MapActivity extends AppCompatActivity implements
     }
 
 
-
-
-    @SuppressWarnings( {"MissingPermission"})
+    @SuppressWarnings({"MissingPermission"})
     private void initializeLocationEngine() {
         LocationEngineProvider locationEngineProvider = new LocationEngineProvider(this);
         locationEngine = locationEngineProvider.obtainBestLocationEngineAvailable();
@@ -332,6 +331,36 @@ public class MapActivity extends AppCompatActivity implements
             originLocation = location;
             setCameraPosition(location);
         }
+
+        List<Marker> markerList = map.getMarkers();
+
+        for (Marker marker: markerList) {
+            if (getDistanceFromCurrentPosition(location.getLatitude(), location.getLongitude(),
+                    marker.getPosition().getLatitude(), marker.getPosition().getLongitude()) <= COLLECTING_DISTANCE) {
+                map.removeMarker(marker);
+            }
+        }
+    }
+
+    public static float getDistanceFromCurrentPosition(double lat1,double lng1, double lat2, double lng2)
+    {
+        double earthRadius = 6371000;
+
+        double dLat = Math.toRadians(lat2 - lat1);
+
+        double dLng = Math.toRadians(lng2 - lng1);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLng / 2)
+                * Math.sin(dLng / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        double dist = earthRadius * c;
+
+        return new Float(dist).floatValue();
+
     }
 
     @Override
