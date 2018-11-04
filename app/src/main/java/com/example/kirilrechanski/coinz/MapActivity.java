@@ -279,11 +279,8 @@ public class MapActivity extends AppCompatActivity implements
             initializeLocationEngine();
             // Create an instance of the plugin. Adding in LocationLayerOptions is also an optional
             // parameter
-            LocationLayerPlugin locationLayerPlugin = new LocationLayerPlugin(mapView, map);
+            initializeLocationLayer();
 
-            // Set the plugin's camera mode
-            locationLayerPlugin.setCameraMode(CameraMode.TRACKING);
-            getLifecycle().addObserver(locationLayerPlugin);
         } else {
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(this);
@@ -295,6 +292,8 @@ public class MapActivity extends AppCompatActivity implements
     private void initializeLocationEngine() {
         LocationEngineProvider locationEngineProvider = new LocationEngineProvider(this);
         locationEngine = locationEngineProvider.obtainBestLocationEngineAvailable();
+        locationEngine.setFastestInterval(1000);
+        locationEngine.setInterval(5000);
         locationEngine.setPriority(LocationEnginePriority.HIGH_ACCURACY);
         locationEngine.activate();
 
@@ -330,14 +329,14 @@ public class MapActivity extends AppCompatActivity implements
         if (location != null) {
             originLocation = location;
             setCameraPosition(location);
-        }
 
-        List<Marker> markerList = map.getMarkers();
+            List<Marker> markerList = map.getMarkers();
 
-        for (Marker marker: markerList) {
-            if (getDistanceFromCurrentPosition(location.getLatitude(), location.getLongitude(),
-                    marker.getPosition().getLatitude(), marker.getPosition().getLongitude()) <= COLLECTING_DISTANCE) {
-                map.removeMarker(marker);
+            for (Marker marker: markerList) {
+                if (getDistanceFromCurrentPosition(location.getLatitude(), location.getLongitude(),
+                        marker.getPosition().getLatitude(), marker.getPosition().getLongitude()) <= COLLECTING_DISTANCE) {
+                    map.removeMarker(marker);
+                }
             }
         }
     }
