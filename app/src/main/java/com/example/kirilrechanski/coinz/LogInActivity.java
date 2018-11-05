@@ -118,9 +118,8 @@ public class LogInActivity extends AppCompatActivity implements
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TESTING", "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(LogInActivity.this, "Account does not exist in the databse.",
+                            Toast.makeText(LogInActivity.this, "An account already exists with that email.",
                                     Toast.LENGTH_SHORT).show();
-
                         }
                     }
                 });
@@ -149,7 +148,7 @@ public class LogInActivity extends AppCompatActivity implements
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LogInActivity.this, "Authentication failed.",
+                            Toast.makeText(LogInActivity.this, "Incorrect email or password.",
                                     Toast.LENGTH_SHORT).show();
                         }
 

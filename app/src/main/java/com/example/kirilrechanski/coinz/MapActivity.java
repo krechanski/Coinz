@@ -49,9 +49,13 @@ import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -62,11 +66,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
+
 public class MapActivity extends AppCompatActivity implements
         OnMapReadyCallback, LocationEngineListener, PermissionsListener, NavigationView.OnNavigationItemSelectedListener {
 
     private final String TAG = "MapActivity";
-    private final String PREFERENCEFILE = "MyPrefsFile"; //For storing preferences
+    private final String PREFERENCE_FILE = "MyPrefsFile"; //For storing preferences
     private final float COLLECTING_DISTANCE = 25;
 
     private MapView mapView;
@@ -140,7 +146,6 @@ public class MapActivity extends AppCompatActivity implements
         FirebaseFirestore mDatabase = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        String userID = currentUser.getUid();
         DocumentReference docRef = mDatabase.collection("users").document(currentUser.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -208,6 +213,7 @@ public class MapActivity extends AppCompatActivity implements
         Toast.makeText(MapActivity.this, "Hello there! ;)",
                 Toast.LENGTH_SHORT).show();
         map = mapboxMap;
+        map.getUiSettings().setCompassEnabled(true);
         enableLocationPlugin();
 
         //Get the custom marker images
@@ -243,12 +249,6 @@ public class MapActivity extends AppCompatActivity implements
                 e.printStackTrace();
             }
         }
-
-        //double resutl = getDistanceFromCurrentPosition(originLocation.getLatitude(), originLocation.getLongitude(), 55.9442, -3.1913);
-        //user coordinates: LAT:	55.9441, Long: -3.1913
-        //marker coordinates: LAT: 55.9442, Long: -3.1913
-        //float resutl: 11.131949
-        //double resut1: 11.131949424743652
     }
 
     //Read input file used to read coinzmap.geojson
@@ -324,6 +324,7 @@ public class MapActivity extends AppCompatActivity implements
         locationEngine.requestLocationUpdates();
     }
 
+    //Remove markers which are less than 25 metres of the user's current location
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
@@ -362,6 +363,18 @@ public class MapActivity extends AppCompatActivity implements
 
     }
 
+
+    public void saveFile(String currentMap) {
+        FileOutputStream outputStream;
+        try {
+            outputStream = openFileOutput("coinzmap.geojson", Context.MODE_PRIVATE);
+            outputStream.write(currentMap.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
         //Present toast or dialog
@@ -389,7 +402,7 @@ public class MapActivity extends AppCompatActivity implements
         }
 
         // Restore preferences
-        SharedPreferences settings = getSharedPreferences(PREFERENCEFILE,
+        SharedPreferences settings = getSharedPreferences(PREFERENCE_FILE,
                 Context.MODE_PRIVATE);
         // use ”” as the default value (this might be the first time the app is run)
         downloadDate = settings.getString("lastDownloadDate", "");
@@ -416,7 +429,7 @@ public class MapActivity extends AppCompatActivity implements
         }
 
 
-        SharedPreferences settings = getSharedPreferences(PREFERENCEFILE,
+        SharedPreferences settings = getSharedPreferences(PREFERENCE_FILE,
                 Context.MODE_PRIVATE);
 
         SharedPreferences.Editor editor = settings.edit();
