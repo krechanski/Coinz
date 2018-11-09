@@ -13,7 +13,7 @@
         app:mapbox_cameraTargetLat="55.9425206"
         app:mapbox_cameraTargetLng="-3.1818463"
         mapbox_styleUrl="@string/mapbox_style_mapbox_streets"
-        app:mapbox_cameraZoom="15"/>
+        app:mapbox_cameraZoom="13"/>
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

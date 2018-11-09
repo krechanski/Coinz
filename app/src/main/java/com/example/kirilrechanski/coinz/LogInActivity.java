@@ -40,8 +40,6 @@ public class LogInActivity extends AppCompatActivity implements
 
     private static final String TAG = "EmailPassword";
 
-
-
     private TextView mStatusTextView;
     private EditText mEmailField;
     private EditText mPasswordField;
@@ -56,9 +54,9 @@ public class LogInActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // [START initialize_auth]
-        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
+
         // Views
         mStatusTextView = findViewById(R.id.status);
         mEmailField = findViewById(R.id.fieldEmail);
@@ -144,7 +142,7 @@ public class LogInActivity extends AppCompatActivity implements
 
                             startActivity(new Intent(LogInActivity.this,MapActivity.class));
                             finish();
-//                           
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());

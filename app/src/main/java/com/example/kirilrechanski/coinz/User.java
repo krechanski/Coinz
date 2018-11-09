@@ -14,7 +14,4 @@ class User {
         this.coinsCollected = coinsCollected;
         this.sumCoins = sumCoins;
     }
-
-
-
 }

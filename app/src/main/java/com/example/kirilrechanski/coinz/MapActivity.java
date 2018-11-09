@@ -23,13 +23,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.JsonObject;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.Geometry;
+import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
@@ -49,24 +53,24 @@ import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 
-import org.json.JSONArray;
+
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
+import static com.example.kirilrechanski.coinz.DownloadCompleteRunner.geoJsonString;
+
 
 public class MapActivity extends AppCompatActivity implements
         OnMapReadyCallback, LocationEngineListener, PermissionsListener, NavigationView.OnNavigationItemSelectedListener {
@@ -84,6 +88,8 @@ public class MapActivity extends AppCompatActivity implements
     private Location originLocation;
     private String downloadDate = ""; //Format: yyy/mm/dd
     private FirebaseAuth mAuth;
+    private FirebaseFirestore databaseReference;
+    private FirebaseUser user;
 
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -116,8 +122,8 @@ public class MapActivity extends AppCompatActivity implements
 
 
         //Get the email of current user.
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
 
 
         mapView = findViewById(R.id.mapView);
@@ -125,10 +131,10 @@ public class MapActivity extends AppCompatActivity implements
         mapView.getMapAsync(this);
 
         //Code below is used to create the NavDrawer
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -143,10 +149,8 @@ public class MapActivity extends AppCompatActivity implements
         navigationView.setNavigationItemSelectedListener(this);
 
         //Set the profile name in navDrawer to user's Username
-        FirebaseFirestore mDatabase = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        DocumentReference docRef = mDatabase.collection("users").document(currentUser.getUid());
+        databaseReference = FirebaseFirestore.getInstance();
+        DocumentReference docRef = databaseReference.collection("users").document(user.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -166,7 +170,7 @@ public class MapActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -176,6 +180,7 @@ public class MapActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.nav_drawer, menu);
         return true;
@@ -183,17 +188,18 @@ public class MapActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
 
@@ -203,7 +209,7 @@ public class MapActivity extends AppCompatActivity implements
             }
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -261,7 +267,7 @@ public class MapActivity extends AppCompatActivity implements
     }
 
 
-    // Fetches the custom marker icon image from drawable
+    // Fetches the custom marker icon image from drawable folder
     private Icon getIcon(int resource) {
         IconFactory iconFactory = IconFactory.getInstance(MapActivity.this);
         BitmapDrawable iconDrawable = (BitmapDrawable) ResourcesCompat.getDrawable(getResources(), resource, null);
@@ -314,8 +320,8 @@ public class MapActivity extends AppCompatActivity implements
     }
 
     private void setCameraPosition(Location location) {
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),
-                location.getLongitude()), 13.0));
+        map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),
+                location.getLongitude())));
     }
 
     @Override
@@ -331,12 +337,35 @@ public class MapActivity extends AppCompatActivity implements
             originLocation = location;
             setCameraPosition(location);
 
+            FeatureCollection featureCollection = FeatureCollection.fromJson(geoJsonString);
+            List<Feature> features;
+            features = featureCollection.features();
+            List<Double> coordinates;
+            
+            List<Feature> removedMarkers = new ArrayList<>();
+
+            for (Feature feature : features) {
+                Geometry geometry = feature.geometry();
+                if (geometry.type().equals("Point")) {
+                    Point point = (Point) geometry;
+                    coordinates = point.coordinates();
+                    JsonObject property = feature.properties();
+                    String currency = property.get("currency").toString().replaceAll("^\"|\"$", "");
+                    Double value = Math.round(property.get("value").getAsDouble() * 100) / 100.0;
+                }
+            }
+
             List<Marker> markerList = map.getMarkers();
 
-            for (Marker marker: markerList) {
-                if (getDistanceFromCurrentPosition(location.getLatitude(), location.getLongitude(),
-                        marker.getPosition().getLatitude(), marker.getPosition().getLongitude()) <= COLLECTING_DISTANCE) {
-                    map.removeMarker(marker);
+            for (Feature feature: features) {
+                for (Marker marker: markerList) {
+                    if (getDistanceFromCurrentPosition(location.getLatitude(), location.getLongitude(),
+                            marker.getPosition().getLatitude(), marker.getPosition().getLongitude()) <= COLLECTING_DISTANCE) {
+                        map.removeMarker(marker);
+                        removedMarkers.add(feature);
+                        Toast.makeText(MapActivity.this, "Added feature to ArrayList",
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }
@@ -361,18 +390,6 @@ public class MapActivity extends AppCompatActivity implements
 
         return new Float(dist).floatValue();
 
-    }
-
-
-    public void saveFile(String currentMap) {
-        FileOutputStream outputStream;
-        try {
-            outputStream = openFileOutput("coinzmap.geojson", Context.MODE_PRIVATE);
-            outputStream.write(currentMap.getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -427,7 +444,6 @@ public class MapActivity extends AppCompatActivity implements
         if (locationLayerPlugin != null) {
             locationLayerPlugin.onStart();
         }
-
 
         SharedPreferences settings = getSharedPreferences(PREFERENCE_FILE,
                 Context.MODE_PRIVATE);

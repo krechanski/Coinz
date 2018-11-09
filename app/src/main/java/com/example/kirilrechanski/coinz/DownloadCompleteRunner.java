@@ -64,35 +64,35 @@ public class DownloadCompleteRunner {
                 Point point = (Point) geometry;
                 coordinates = point.coordinates();
                 JsonObject property = feature.properties();
-                String currency = property.get("currency").toString();
+                String currency = property.get("currency").toString().replaceAll("^\"|\"$", "");
                 Double value = Math.round(property.get("value").getAsDouble()*100)/100.0;
                 MarkerOptions markerOptions = new MarkerOptions();
 
 
                 // Place custom markers on the currencies
                 switch (currency) {
-                    case "\"DOLR\"":
+                    case "DOLR":
                         MapActivity.map.addMarker(markerOptions.title(currency)
                                 .snippet(value.toString())
                                 .position(new LatLng(coordinates.get(1), coordinates.get(0)))
                                 .icon(MapActivity.markerDLR));
                         break;
 
-                    case "\"SHIL\"":
+                    case "SHIL":
                         MapActivity.map.addMarker(markerOptions.title(currency)
                                 .snippet(value.toString())
                                 .position(new LatLng(coordinates.get(1), coordinates.get(0)))
                                 .icon(MapActivity.markerSHIL));
                         break;
 
-                    case "\"PENY\"":
+                    case "PENY":
                         MapActivity.map.addMarker(markerOptions.title(currency)
                                 .snippet(value.toString())
                                 .position(new LatLng(coordinates.get(1), coordinates.get(0)))
                                 .icon(MapActivity.markerPENY));
                         break;
 
-                    case "\"QUID\"":
+                    case "QUID":
                         MapActivity.map.addMarker(markerOptions.title(currency)
                                 .snippet(value.toString())
                                 .position(new LatLng(coordinates.get(1), coordinates.get(0)))
