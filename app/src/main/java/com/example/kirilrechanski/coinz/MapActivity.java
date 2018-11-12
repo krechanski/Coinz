@@ -29,9 +29,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.JsonObject;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.GeoJson;
 import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -54,6 +54,7 @@ import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -70,6 +71,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.example.kirilrechanski.coinz.DownloadCompleteRunner.geoJsonString;
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 
 
 public class MapActivity extends AppCompatActivity implements
@@ -245,7 +247,7 @@ public class MapActivity extends AppCompatActivity implements
         //If the map is already downloaded locally, read it and call DownloadCompleteRunner
         else {
             mapDownloaded = true;
-            String geoJsonString;
+            String geoJsonString = "";
             try {
                 FileInputStream fileInputStream = openFileInput("coinzmap.geojson");
                 geoJsonString = readStream(fileInputStream);
@@ -337,40 +339,18 @@ public class MapActivity extends AppCompatActivity implements
             originLocation = location;
             setCameraPosition(location);
 
-            FeatureCollection featureCollection = FeatureCollection.fromJson(geoJsonString);
-            List<Feature> features;
-            features = featureCollection.features();
-            List<Double> coordinates;
-            
-            List<Feature> removedMarkers = new ArrayList<>();
-
-            for (Feature feature : features) {
-                Geometry geometry = feature.geometry();
-                if (geometry.type().equals("Point")) {
-                    Point point = (Point) geometry;
-                    coordinates = point.coordinates();
-                    JsonObject property = feature.properties();
-                    String currency = property.get("currency").toString().replaceAll("^\"|\"$", "");
-                    Double value = Math.round(property.get("value").getAsDouble() * 100) / 100.0;
-                }
-            }
-
             List<Marker> markerList = map.getMarkers();
-
-            for (Feature feature: features) {
-                for (Marker marker: markerList) {
-                    if (getDistanceFromCurrentPosition(location.getLatitude(), location.getLongitude(),
-                            marker.getPosition().getLatitude(), marker.getPosition().getLongitude()) <= COLLECTING_DISTANCE) {
-                        map.removeMarker(marker);
-                        removedMarkers.add(feature);
-                        Toast.makeText(MapActivity.this, "Added feature to ArrayList",
-                                Toast.LENGTH_SHORT).show();
-                    }
+            for (Marker marker : markerList) {
+                if (getDistanceFromCurrentPosition(location.getLatitude(), location.getLongitude(),
+                        marker.getPosition().getLatitude(), marker.getPosition().getLongitude()) <= COLLECTING_DISTANCE) {
+                    map.removeMarker(marker);
                 }
             }
         }
     }
 
+
+    //Used to calculate distance between the user and a target
     public static float getDistanceFromCurrentPosition(double lat1,double lng1, double lat2, double lng2)
     {
         double earthRadius = 6371000;
@@ -445,6 +425,36 @@ public class MapActivity extends AppCompatActivity implements
             locationLayerPlugin.onStart();
         }
 
+        //Save the uncollected markers in a local file so
+        //you don't have to pick the same marker twice on resume
+
+        List<Marker> remainedMarkers = map.getMarkers();
+        List<Feature> features = new ArrayList<>();
+        List<Double> coordinatesMarker;
+
+        for (Marker m: remainedMarkers) {
+            String currency = m.getTitle();
+            String value = m.getSnippet();
+            Double latitude = m.getPosition().getLatitude();
+            Double longitude = m.getPosition().getLongitude();
+
+
+            Point point = Point.fromLngLat(longitude, latitude);
+            coordinatesMarker = point.coordinates();
+            Geometry geometry = (Geometry) point;
+
+            Feature feature = Feature.fromGeometry(geometry);
+            feature.addStringProperty("value", value );
+            feature.addStringProperty("currency", currency);
+            features.add(feature);
+
+        }
+
+        FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
+
+        String GEOJsonString = DownloadCompleteRunner.mapRates + featureCollection.toJson().substring(1);
+        saveFile(GEOJsonString);
+
         SharedPreferences settings = getSharedPreferences(PREFERENCE_FILE,
                 Context.MODE_PRIVATE);
 
@@ -452,6 +462,20 @@ public class MapActivity extends AppCompatActivity implements
         editor.putString("lastDownloadDate", downloadDate);
         editor.apply();
         mapView.onStop();
+    }
+
+
+    //Method used to save the coinz map in local storage
+    public  void saveFile(String currentMap) {
+        FileOutputStream outputStream;
+        try {
+            outputStream = getApplicationContext().openFileOutput("coinzmap.geojson", Context.MODE_PRIVATE);
+            outputStream.write(currentMap.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override

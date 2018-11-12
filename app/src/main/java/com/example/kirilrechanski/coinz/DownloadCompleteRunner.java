@@ -23,6 +23,7 @@ import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 public class DownloadCompleteRunner {
     static String result;
     static String geoJsonString;
+    static String mapRates;
 
     /*
        Initially save the downloaded string map into geoJsonString. After that create a FeatureCollection,
@@ -34,6 +35,9 @@ public class DownloadCompleteRunner {
     public static void downloadComplete(String result) {
         DownloadCompleteRunner.result = result;
         geoJsonString = result;
+
+        int ratesM = geoJsonString.indexOf("features")-1;
+        mapRates = geoJsonString.substring(0,ratesM);
 
         //Save the coinzMap if it hasn't been already
         if (!MapActivity.mapDownloaded) {
@@ -65,9 +69,9 @@ public class DownloadCompleteRunner {
                 coordinates = point.coordinates();
                 JsonObject property = feature.properties();
                 String currency = property.get("currency").toString().replaceAll("^\"|\"$", "");
+                //String coinID = property.get("id").toString().replaceAll("^\"|\"$", "");
                 Double value = Math.round(property.get("value").getAsDouble()*100)/100.0;
                 MarkerOptions markerOptions = new MarkerOptions();
-
 
                 // Place custom markers on the currencies
                 switch (currency) {
