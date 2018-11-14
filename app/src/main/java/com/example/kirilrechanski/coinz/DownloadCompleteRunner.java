@@ -16,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileOutputStream;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
@@ -48,7 +49,7 @@ public class DownloadCompleteRunner {
         try {
             JSONObject jsonObject = new JSONObject(result);
             JSONObject rates = jsonObject.getJSONObject("rates");
-            MapActivity.DLRrate = rates.getDouble("DOLR");
+            MapActivity.DLRrate  = rates.getDouble("DOLR");
             MapActivity.PENYrate = rates.getDouble("PENY");
             MapActivity.QUIDrate = rates.getDouble("QUID");
             MapActivity.SHILrate = rates.getDouble("SHIL");
@@ -69,8 +70,7 @@ public class DownloadCompleteRunner {
                 coordinates = point.coordinates();
                 JsonObject property = feature.properties();
                 String currency = property.get("currency").toString().replaceAll("^\"|\"$", "");
-                //String coinID = property.get("id").toString().replaceAll("^\"|\"$", "");
-                Double value = Math.round(property.get("value").getAsDouble()*100)/100.0;
+                Double value = property.get("value").getAsDouble();
                 MarkerOptions markerOptions = new MarkerOptions();
 
                 // Place custom markers on the currencies

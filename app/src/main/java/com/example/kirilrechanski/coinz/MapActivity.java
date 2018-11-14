@@ -86,6 +86,8 @@ public class MapActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     private FirebaseFirestore databaseReference;
     private FirebaseUser user;
+    private int coinsCollected;
+    private double sumCoins;
 
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -201,7 +203,14 @@ public class MapActivity extends AppCompatActivity implements
 
             case R.id.nav_signOut: {
                 FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(MapActivity.this, LogInActivity.class));
+                startActivity(new Intent(this, LogInActivity.class));
+                finish();
+                break;
+            }
+
+            case R.id.nav_wallet: {
+                startActivity(new Intent(this, Bank.class));
+                break;
             }
         }
 
@@ -336,8 +345,20 @@ public class MapActivity extends AppCompatActivity implements
 
             List<Marker> markerList = map.getMarkers();
             for (Marker marker : markerList) {
+
                 if (getDistanceFromCurrentPosition(location.getLatitude(), location.getLongitude(),
                         marker.getPosition().getLatitude(), marker.getPosition().getLongitude()) <= COLLECTING_DISTANCE) {
+
+                    double coinValue = Double.parseDouble(marker.getSnippet());
+                    sumCoins = sumCoins + coinValue;
+
+                    //Increment collected coins and update the field in the FireStore Database
+                    databaseReference.collection("users").document(user.getUid())
+                            .update("coinsCollected", coinsCollected++);
+
+                    databaseReference.collection("users").document(user.getUid())
+                            .update("sumCoins", sumCoins);
+
                     map.removeMarker(marker);
                 }
             }
