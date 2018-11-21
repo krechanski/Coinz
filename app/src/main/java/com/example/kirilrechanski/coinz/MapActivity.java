@@ -209,7 +209,7 @@ public class MapActivity extends AppCompatActivity implements
             }
 
             case R.id.nav_wallet: {
-                startActivity(new Intent(this, Bank.class));
+                startActivity(new Intent(this, Wallet.class));
                 break;
             }
         }
@@ -237,6 +237,16 @@ public class MapActivity extends AppCompatActivity implements
         Date date = new Date();
         String currentDate = dateFormat.format(date);
         String url = "http://homepages.inf.ed.ac.uk/stg/coinz/" + currentDate + "/coinzmap.geojson";
+
+        //Reset number of coins and sum after the day has ended
+        if (!downloadDate.equals(currentDate)) {
+            //Increment collected coins and update the field in the FireStore Database
+            databaseReference.collection("users").document(user.getUid())
+                    .update("coinsCollected", 0);
+
+            databaseReference.collection("users").document(user.getUid())
+                    .update("sumCoins", 0);
+        }
 
 
         //Start downloading the map if the download date is different than the current one

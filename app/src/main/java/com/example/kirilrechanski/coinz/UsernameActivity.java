@@ -22,7 +22,6 @@ public class UsernameActivity extends AppCompatActivity {
     The user sets his username which is linked with his email
     and it is saved in the FireStore Database.
      */
-
     private FirebaseAuth mAuth;
 
     @Override
