@@ -28,11 +28,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".MapActivity"
             android:label="Coinz"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".UsernameActivity"></activity>
+
+        <activity
+            android:name=".UsernameActivity">
+        </activity>
+
         <activity
             android:name=".Wallet"
             android:label="@string/title_activity_wallet"
