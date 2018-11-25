@@ -9,68 +9,60 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-class ImageAdapter extends BaseAdapter {
-    String [] currencies;
-    Context context;
-    int [] markers;
-    private static LayoutInflater inflater=null;
-    public ImageAdapter(Wallet wallet, String[] coinCurrencies, int[] coinMarkers) {
-        // TODO Auto-generated constructor stub
-        currencies=coinCurrencies;
-        context=wallet;
-        markers=coinMarkers;
-        inflater = ( LayoutInflater )context.
-                getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+public class ImageAdapter extends BaseAdapter {
+    private final Context mContext;
+    private Coin[] coins;
 
+    // 1
+    public ImageAdapter(Context context, Coin[] coins) {
+        this.mContext = context;
+        this.coins = coins;
     }
 
+    // 2
     @Override
     public int getCount() {
-        // TODO Auto-generated method stub
-        return currencies.length;
+        return coins.length;
     }
 
-    @Override
-    public Object getItem(int position) {
-        // TODO Auto-generated method stub
-        return position;
-    }
-
+    // 3
     @Override
     public long getItemId(int position) {
-        // TODO Auto-generated method stub
-        return position;
+        return 0;
     }
 
-    public class Holder
-    {
-        TextView coinText;
-        ImageView coinMarker;
-    }
+    // 4
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        // TODO Auto-generated method stub
-        Holder holder=new Holder();
-        View rowView;
-
-        rowView = inflater.inflate(R.layout.coin_layout, null);
-        holder.coinText =(TextView) rowView.findViewById(R.id.coinCurrency);
-        holder.coinMarker =(ImageView) rowView.findViewById(R.id.coinMarker);
-
-        holder.coinText.setText(currencies[position]);
-        holder.coinMarker.setImageResource(markers[position]);
-
-        rowView.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                Toast.makeText(context, "You Clicked "+currencies[position], Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        return rowView;
+    public Object getItem(int position) {
+        return null;
     }
+
+    // 5
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        final Coin coin = coins[position];
+
+        // 2
+        if (convertView == null) {
+            final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+            convertView = layoutInflater.inflate(R.layout.coin_layout, null);
+        }
+
+        // 3
+        final ImageView coinMarker = (ImageView)convertView.findViewById(R.id.coinMarker);
+        final TextView coinCurrency = (TextView)convertView.findViewById(R.id.coinCurrency);
+        final TextView coinValue = (TextView)convertView.findViewById(R.id.coinValue);
+
+        // 4
+        coinMarker.setImageResource(coin.getIcon());
+        coinCurrency.setText(coin.getCurrency());
+        String stringDouble = Double.toString(coin.getValue());
+        coinValue.setText(stringDouble);
+
+
+        return convertView;
+
+}
 
 
 }

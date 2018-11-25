@@ -11,6 +11,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Wallet extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -18,23 +21,6 @@ public class Wallet extends AppCompatActivity {
     private FirebaseUser user;
     private String coinsCollected = "0";
     private String sumCoins = "0";
-    static final String[] CURRENCIES = new String[] {"SHIL", "DOLR", "PENY", "QUID"};
-
-
-
-    public static String[] coinCurrencies = {
-            "SHIL",
-            "DOLR",
-            "PENY",
-            "QUID",
-    };
-    public static int[] coinMarkers = {
-            R.drawable.blue_marker,
-            R.drawable.green_marker,
-            R.drawable.red_marker,
-            R.drawable.yellow_marker
-            };
-
 
     /*Get the current user and his data fields for collected coins
     and sumCoins*/
@@ -42,10 +28,12 @@ public class Wallet extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet);
-        Coin[] coins = {new Coin("DOLR", 4.3), new Coin("QUID", 5.20)};
+        Coin[] coins = {new Coin("DOLR", 4.33), new Coin("QUID", 5.21)};
+        List<Coin> coinList = Arrays.asList(coins);
 
-        GridView gridview = (GridView) findViewById(R.id.gridview);
-        gridview.setAdapter(new ImageAdapter(this, coinCurrencies, coinMarkers));
+        GridView gridview = (GridView)findViewById(R.id.gridview);
+        ImageAdapter imageAdapter = new ImageAdapter(this, coins);
+        gridview.setAdapter(imageAdapter);
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
