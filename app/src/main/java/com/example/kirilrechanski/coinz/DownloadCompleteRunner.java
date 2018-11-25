@@ -7,8 +7,6 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
-import com.mapbox.mapboxsdk.annotations.IconFactory;
-import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
@@ -16,7 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileOutputStream;
-import java.util.HashMap;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
@@ -25,6 +23,7 @@ public class DownloadCompleteRunner {
     static String result;
     static String geoJsonString;
     static String mapRates;
+    static DecimalFormat df2 = new DecimalFormat(".##");
 
     /*
        Initially save the downloaded string map into geoJsonString. After that create a FeatureCollection,
@@ -77,28 +76,28 @@ public class DownloadCompleteRunner {
                 switch (currency) {
                     case "DOLR":
                         MapActivity.map.addMarker(markerOptions.title(currency)
-                                .snippet(value.toString())
+                                .snippet(String.format("%.2f", value))
                                 .position(new LatLng(coordinates.get(1), coordinates.get(0)))
                                 .icon(MapActivity.markerDLR));
                         break;
 
                     case "SHIL":
                         MapActivity.map.addMarker(markerOptions.title(currency)
-                                .snippet(value.toString())
+                                .snippet(String.format("%.2f", value))
                                 .position(new LatLng(coordinates.get(1), coordinates.get(0)))
                                 .icon(MapActivity.markerSHIL));
                         break;
 
                     case "PENY":
                         MapActivity.map.addMarker(markerOptions.title(currency)
-                                .snippet(value.toString())
+                                .snippet(String.format("%.2f", value))
                                 .position(new LatLng(coordinates.get(1), coordinates.get(0)))
                                 .icon(MapActivity.markerPENY));
                         break;
 
                     case "QUID":
                         MapActivity.map.addMarker(markerOptions.title(currency)
-                                .snippet(value.toString())
+                                .snippet(String.format("%.2f", value))
                                 .position(new LatLng(coordinates.get(1), coordinates.get(0)))
                                 .icon(MapActivity.markerQUID));
                         break;
