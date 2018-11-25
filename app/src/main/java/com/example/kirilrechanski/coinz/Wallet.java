@@ -1,21 +1,14 @@
 package com.example.kirilrechanski.coinz;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Wallet extends AppCompatActivity {
@@ -28,6 +21,21 @@ public class Wallet extends AppCompatActivity {
     static final String[] CURRENCIES = new String[] {"SHIL", "DOLR", "PENY", "QUID"};
 
 
+
+    public static String[] coinCurrencies = {
+            "SHIL",
+            "DOLR",
+            "PENY",
+            "QUID",
+    };
+    public static int[] coinMarkers = {
+            R.drawable.blue_marker,
+            R.drawable.green_marker,
+            R.drawable.red_marker,
+            R.drawable.yellow_marker
+            };
+
+
     /*Get the current user and his data fields for collected coins
     and sumCoins*/
     @Override
@@ -37,7 +45,7 @@ public class Wallet extends AppCompatActivity {
         Coin[] coins = {new Coin("DOLR", 4.3), new Coin("QUID", 5.20)};
 
         GridView gridview = (GridView) findViewById(R.id.gridview);
-        gridview.setAdapter(new ImageAdapter(this));
+        gridview.setAdapter(new ImageAdapter(this, coinCurrencies, coinMarkers));
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,

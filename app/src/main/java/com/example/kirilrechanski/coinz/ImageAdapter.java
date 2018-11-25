@@ -1,53 +1,75 @@
 package com.example.kirilrechanski.coinz;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 class ImageAdapter extends BaseAdapter {
-    private Context context;
-    // references to our images
-
-    private Integer[] coinCurrencies = {
-            R.drawable.blue_marker, R.drawable.green_marker,
-            R.drawable.red_marker, R.drawable.yellow_marker
-    };
-
-    public ImageAdapter(Context con) {
-        this.context = con;
+    String [] currencies;
+    Context context;
+    int [] markers;
+    private static LayoutInflater inflater=null;
+    public ImageAdapter(Wallet wallet, String[] coinCurrencies, int[] coinMarkers) {
+        // TODO Auto-generated constructor stub
+        currencies=coinCurrencies;
+        context=wallet;
+        markers=coinMarkers;
+        inflater = ( LayoutInflater )context.
+                getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
     }
 
+    @Override
     public int getCount() {
-        return coinCurrencies.length;
+        // TODO Auto-generated method stub
+        return currencies.length;
     }
 
+    @Override
     public Object getItem(int position) {
+        // TODO Auto-generated method stub
         return position;
     }
 
+    @Override
     public long getItemId(int position) {
+        // TODO Auto-generated method stub
         return position;
     }
 
-    // create a new ImageView for each item referenced by the Adapter
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ImageView imageView;
-        if (convertView == null) {
+    public class Holder
+    {
+        TextView coinText;
+        ImageView coinMarker;
+    }
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        // TODO Auto-generated method stub
+        Holder holder=new Holder();
+        View rowView;
 
-            // if it's not recycled, initialize some attributes
-            imageView = new ImageView(context);
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(200, 200));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(8, 8, 8, 8);
-        } else {
-            imageView = (ImageView) convertView;
-        }
-        imageView.setImageResource(coinCurrencies[position]);
-        return imageView;
+        rowView = inflater.inflate(R.layout.coin_layout, null);
+        holder.coinText =(TextView) rowView.findViewById(R.id.coinCurrency);
+        holder.coinMarker =(ImageView) rowView.findViewById(R.id.coinMarker);
+
+        holder.coinText.setText(currencies[position]);
+        holder.coinMarker.setImageResource(markers[position]);
+
+        rowView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                Toast.makeText(context, "You Clicked "+currencies[position], Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        return rowView;
     }
 
 
