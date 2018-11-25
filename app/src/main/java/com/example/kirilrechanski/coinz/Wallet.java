@@ -25,6 +25,8 @@ public class Wallet extends AppCompatActivity {
     private FirebaseUser user;
     private String coinsCollected = "0";
     private String sumCoins = "0";
+    static final String[] CURRENCIES = new String[] {"SHIL", "DOLR", "PENY", "QUID"};
+
 
     /*Get the current user and his data fields for collected coins
     and sumCoins*/
@@ -32,6 +34,7 @@ public class Wallet extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet);
+        Coin[] coins = {new Coin("DOLR", 4.3), new Coin("QUID", 5.20)};
 
         GridView gridview = (GridView) findViewById(R.id.gridview);
         gridview.setAdapter(new ImageAdapter(this));

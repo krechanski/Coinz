@@ -10,7 +10,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/imageview_cover_art"
+            android:id="@+id/coinMarker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"/>
@@ -18,11 +18,11 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/textview_book_name"
+        android:id="@+id/coinCurrency"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
-        tools:text="Are You My Mother"
+        tools:text="Value"
         android:textStyle="bold"
         android:paddingTop="4dp"
         android:paddingLeft="8dp"
@@ -30,11 +30,11 @@
         android:gravity="center_horizontal"/>
 
     <TextView
-        android:id="@+id/textview_book_author"
+        android:id="@+id/coinValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
-        tools:text="Dr. Seuss"
+        tools:text="Currency"
         android:gravity="center_horizontal"/>
 
 </LinearLayout>

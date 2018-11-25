@@ -10,6 +10,7 @@ import android.widget.TextView;
 class ImageAdapter extends BaseAdapter {
     private Context context;
     // references to our images
+
     private Integer[] coinCurrencies = {
             R.drawable.blue_marker, R.drawable.green_marker,
             R.drawable.red_marker, R.drawable.yellow_marker
@@ -36,6 +37,7 @@ class ImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
         if (convertView == null) {
+
             // if it's not recycled, initialize some attributes
             imageView = new ImageView(context);
             imageView.setLayoutParams(new ViewGroup.LayoutParams(200, 200));

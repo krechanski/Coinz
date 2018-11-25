@@ -1,15 +1,31 @@
 package com.example.kirilrechanski.coinz;
 
 public class Coin {
-    public String name;
+    public String currency;
     public double value;
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
 
     public Coin() {
 
     }
 
-    public Coin(String name, double value) {
-        this.name = name;
+    public Coin(String currency, double value) {
+        this.currency = currency;
         this.value = value;
     }
 }
