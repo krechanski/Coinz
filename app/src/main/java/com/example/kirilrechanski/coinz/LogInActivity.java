@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Google Inc. All Rights Reserved.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -76,8 +76,8 @@ public class LogInActivity extends AppCompatActivity implements
         super.onStart();
 
         // Skip login screen and go to the map if the currentUser hasn't logged out
-        if (mAuth.getCurrentUser()!= null) {
-            startActivity(new Intent(getApplicationContext(),MapActivity.class));
+        if (mAuth.getCurrentUser() != null) {
+            startActivity(new Intent(getApplicationContext(), MapActivity.class));
         }
 
     }
@@ -88,7 +88,6 @@ public class LogInActivity extends AppCompatActivity implements
         if (!validateForm()) {
             return;
         }
-
 
 
         // [START create_user_with_email]
@@ -105,9 +104,9 @@ public class LogInActivity extends AppCompatActivity implements
                             mAuth = FirebaseAuth.getInstance();
                             FirebaseUser currentUser = mAuth.getCurrentUser();
 
-                            if(currentUser != null) {
+                            if (currentUser != null) {
                                 mDatabase.collection("users").document(currentUser.getUid())
-                                        .set(new User(email, 0,0));
+                                        .set(new User(email, 0, 0));
 
                             }
                             startActivity(new Intent(LogInActivity.this, UsernameActivity.class));
@@ -125,7 +124,6 @@ public class LogInActivity extends AppCompatActivity implements
     }
 
 
-
     private void signIn(String email, String password) {
         Log.d(TAG, "signIn:" + email);
         if (!validateForm()) {
@@ -140,7 +138,7 @@ public class LogInActivity extends AppCompatActivity implements
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
 
-                            startActivity(new Intent(LogInActivity.this,MapActivity.class));
+                            startActivity(new Intent(LogInActivity.this, MapActivity.class));
                             finish();
 
                         } else {
@@ -159,7 +157,6 @@ public class LogInActivity extends AppCompatActivity implements
                 });
         // [END sign_in_with_email]
     }
-
 
 
     private void signOut() {

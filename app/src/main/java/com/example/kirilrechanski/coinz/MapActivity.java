@@ -377,8 +377,7 @@ public class MapActivity extends AppCompatActivity implements
 
 
     //Used to calculate distance between the user and a target
-    public static float getDistanceFromCurrentPosition(double lat1,double lng1, double lat2, double lng2)
-    {
+    public static float getDistanceFromCurrentPosition(double lat1, double lng1, double lat2, double lng2) {
         double earthRadius = 6371000;
 
         double dLat = Math.toRadians(lat2 - lat1);
@@ -415,7 +414,7 @@ public class MapActivity extends AppCompatActivity implements
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    @SuppressWarnings( {"MissingPermission"})
+    @SuppressWarnings({"MissingPermission"})
     @Override
     protected void onStart() {
         super.onStart();
@@ -458,7 +457,7 @@ public class MapActivity extends AppCompatActivity implements
         List<Feature> features = new ArrayList<>();
         List<Double> coordinatesMarker;
 
-        for (Marker m: remainedMarkers) {
+        for (Marker m : remainedMarkers) {
             String currency = m.getTitle();
             String value = m.getSnippet();
             Double latitude = m.getPosition().getLatitude();
@@ -470,7 +469,7 @@ public class MapActivity extends AppCompatActivity implements
             Geometry geometry = (Geometry) point;
 
             Feature feature = Feature.fromGeometry(geometry);
-            feature.addStringProperty("value", value );
+            feature.addStringProperty("value", value);
             feature.addStringProperty("currency", currency);
             features.add(feature);
 
@@ -492,7 +491,7 @@ public class MapActivity extends AppCompatActivity implements
 
 
     //Method used to save the coinz map in local storage
-    public  void saveFile(String currentMap) {
+    public void saveFile(String currentMap) {
         FileOutputStream outputStream;
         try {
             outputStream = getApplicationContext().openFileOutput("coinzmap.geojson", Context.MODE_PRIVATE);
@@ -505,10 +504,8 @@ public class MapActivity extends AppCompatActivity implements
     }
 
     //Minimize the app on back-pressed
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
-        {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
             this.moveTaskToBack(true);
             return true;
         }

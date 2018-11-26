@@ -3,9 +3,11 @@ package com.example.kirilrechanski.coinz;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -32,14 +34,17 @@ public class Wallet extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet);
-        Coin[] coinsArr = {new Coin("DOLR", 4.33), new Coin("QUID", 5.21)};
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        Coin[] coinsArr = {new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21),new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21),new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21) };
         List<Coin> coins = new ArrayList<>(Arrays.asList(coinsArr));
         List<Coin> selectedCoins = new ArrayList<>();
+        int numCoins = coins.size();
 
         GridView gridview = (GridView) findViewById(R.id.gridview);
         ImageAdapter imageAdapter = new ImageAdapter(this, coins);
         gridview.setAdapter(imageAdapter);
-
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
@@ -47,14 +52,52 @@ public class Wallet extends AppCompatActivity {
                 if (selectedIndex > -1) {
                     imageAdapter.selectedPositions.remove(selectedIndex);
                     selectedCoins.remove((Coin) parent.getItemAtPosition(position));
-                    v.setBackgroundResource(R.drawable.coin_selected);
+                    v.setBackgroundResource(R.drawable.coin_notselected);
                 } else {
                     imageAdapter.selectedPositions.add(position);
                     selectedCoins.add((Coin) parent.getItemAtPosition(position));
-                    v.setBackgroundResource(R.drawable.coin_notselected);
+                    v.setBackgroundResource(R.drawable.coin_selected);
                 }
             }
         });
+
+        Button markAll = (Button) findViewById(R.id.markAll);
+        markAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageAdapter.selectedPositions.clear();
+                selectedCoins.clear();
+                selectedCoins.addAll(coins);
+                for (int i = 0; i < numCoins; i++) {
+                    imageAdapter.selectedPositions.add(i);
+                    View view = (View) gridview.getChildAt(i);
+                    if (view != null) {
+                        view.setBackgroundResource(R.drawable.coin_selected);
+                    }
+
+
+                }
+            }
+        });
+
+
+        Button unmarkAll = findViewById(R.id.unmarkAll);
+        unmarkAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageAdapter.selectedPositions.clear();
+                selectedCoins.clear();
+
+                for (int i = 0; i < numCoins; i++) {
+                    View view = (View) gridview.getChildAt(i);
+                    if (view != null) {
+                        view.setBackgroundResource(R.drawable.coin_notselected);
+                    }
+                }
+            }
+        });
+
+
     }
 
 

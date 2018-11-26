@@ -37,7 +37,7 @@ public class UsernameActivity extends AppCompatActivity {
 
                 TextView username = findViewById(R.id.usernameField);
 
-                if(currentUser != null) {
+                if (currentUser != null) {
                     mDatabase.collection("users").document(currentUser.getUid())
                             .update("username", username.getText().toString());
                     Toast.makeText(UsernameActivity.this, "Username created.",

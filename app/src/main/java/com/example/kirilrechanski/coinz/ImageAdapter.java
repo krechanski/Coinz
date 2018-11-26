@@ -45,6 +45,8 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         final Coin coin = coins.get(position);
 
+
+
         // 2
         if (convertView == null) {
             final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
@@ -52,9 +54,9 @@ public class ImageAdapter extends BaseAdapter {
         }
 
         // 3
-        final ImageView coinMarker = (ImageView)convertView.findViewById(R.id.coinMarker);
-        final TextView coinCurrency = (TextView)convertView.findViewById(R.id.coinCurrency);
-        final TextView coinValue = (TextView)convertView.findViewById(R.id.coinValue);
+        final ImageView coinMarker = (ImageView) convertView.findViewById(R.id.coinMarker);
+        final TextView coinCurrency = (TextView) convertView.findViewById(R.id.coinCurrency);
+        final TextView coinValue = (TextView) convertView.findViewById(R.id.coinValue);
 
         // 4
         coinMarker.setImageResource(coin.getIcon());
@@ -62,10 +64,18 @@ public class ImageAdapter extends BaseAdapter {
         String stringDouble = Double.toString(coin.getValue());
         coinValue.setText(stringDouble);
 
+        if (selectedPositions.contains(position)) {
+            convertView.setBackgroundResource(R.drawable.coin_selected);
+        }
+
+        else {
+            convertView.setBackgroundResource(R.drawable.coin_notselected);
+        }
+
 
         return convertView;
 
-}
+    }
 
 
 }

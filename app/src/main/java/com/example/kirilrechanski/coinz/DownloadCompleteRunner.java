@@ -36,8 +36,8 @@ public class DownloadCompleteRunner {
         DownloadCompleteRunner.result = result;
         geoJsonString = result;
 
-        int ratesM = geoJsonString.indexOf("features")-1;
-        mapRates = geoJsonString.substring(0,ratesM);
+        int ratesM = geoJsonString.indexOf("features") - 1;
+        mapRates = geoJsonString.substring(0, ratesM);
 
         //Save the coinzMap if it hasn't been already
         if (!MapActivity.mapDownloaded) {
@@ -48,7 +48,7 @@ public class DownloadCompleteRunner {
         try {
             JSONObject jsonObject = new JSONObject(result);
             JSONObject rates = jsonObject.getJSONObject("rates");
-            MapActivity.DLRrate  = rates.getDouble("DOLR");
+            MapActivity.DLRrate = rates.getDouble("DOLR");
             MapActivity.PENYrate = rates.getDouble("PENY");
             MapActivity.QUIDrate = rates.getDouble("QUID");
             MapActivity.SHILrate = rates.getDouble("SHIL");
