@@ -8,12 +8,16 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ImageAdapter extends BaseAdapter {
     private final Context mContext;
-    private Coin[] coins;
+    private List<Coin> coins;
+    public List selectedPositions = new ArrayList();
 
     // 1
-    public ImageAdapter(Context context, Coin[] coins) {
+    public ImageAdapter(Context context, List<Coin> coins) {
         this.mContext = context;
         this.coins = coins;
     }
@@ -21,7 +25,7 @@ public class ImageAdapter extends BaseAdapter {
     // 2
     @Override
     public int getCount() {
-        return coins.length;
+        return coins.size();
     }
 
     // 3
@@ -39,7 +43,7 @@ public class ImageAdapter extends BaseAdapter {
     // 5
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final Coin coin = coins[position];
+        final Coin coin = coins.get(position);
 
         // 2
         if (convertView == null) {
