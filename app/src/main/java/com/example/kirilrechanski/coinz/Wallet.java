@@ -28,6 +28,7 @@ public class Wallet extends AppCompatActivity {
     private FirebaseUser user;
     private String coinsCollected = "0";
     private String sumCoins = "0";
+    static List<Coin> coins = new ArrayList<>();
 
 
     @Override
@@ -37,8 +38,8 @@ public class Wallet extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Coin[] coinsArr = {new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21),new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21),new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21) };
-        List<Coin> coins = new ArrayList<>(Arrays.asList(coinsArr));
+        //Coin[] coinsArr = {new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21),new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21),new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21) };
+        //List<Coin> coins = new ArrayList<>(Arrays.asList(coinsArr));
         List<Coin> selectedCoins = new ArrayList<>();
         int numCoins = coins.size();
 

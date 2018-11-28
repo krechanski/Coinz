@@ -369,6 +369,12 @@ public class MapActivity extends AppCompatActivity implements
                     databaseReference.collection("users").document(user.getUid())
                             .update("sumCoins", sumCoins);
 
+                    Coin coin = new Coin();
+                    coin.setCurrency(marker.getTitle());
+                    coin.setValue(Double.parseDouble(marker.getSnippet()));
+
+                    Wallet.coins.add(coin);
+
                     map.removeMarker(marker);
                 }
             }
