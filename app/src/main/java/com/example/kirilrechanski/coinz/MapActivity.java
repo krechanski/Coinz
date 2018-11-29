@@ -372,6 +372,7 @@ public class MapActivity extends AppCompatActivity implements
                     Coin coin = new Coin();
                     coin.setCurrency(marker.getTitle());
                     coin.setValue(Double.parseDouble(marker.getSnippet()));
+                    coin.setIcon(marker.getIcon());
 
                     Wallet.coins.add(coin);
 
