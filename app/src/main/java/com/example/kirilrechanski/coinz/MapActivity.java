@@ -369,11 +369,8 @@ public class MapActivity extends AppCompatActivity implements
                     databaseReference.collection("users").document(user.getUid())
                             .update("sumCoins", sumCoins);
 
+                    //Create coin object from the markers and save it to a List in Wallet activity
                     Coin coin = new Coin(marker.getTitle(),Double.parseDouble(marker.getSnippet()));
-//                    coin.setCurrency(marker.getTitle());
-//                    coin.setValue(Double.parseDouble(marker.getSnippet()));
-//                    coin.setIcon(marker.getIcon());
-
                     Wallet.coins.add(coin);
 
                     map.removeMarker(marker);

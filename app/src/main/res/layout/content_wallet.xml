@@ -11,8 +11,8 @@
 
     <GridView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/gridview"
-        android:layout_width="341dp"
-        android:layout_height="317dp"
+        android:layout_width="340dp"
+        android:layout_height="233dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -31,31 +31,150 @@
 
     <Button
         android:id="@+id/markAll"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="42dp"
+        android:layout_height="40dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Mark all"
+        android:background="@drawable/check_tick"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/unmarkAll"
-        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintHorizontal_bias="0.23"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gridview"
-        app:layout_constraintVertical_bias="0.113" />
+        app:layout_constraintVertical_bias="0.288" />
 
     <Button
         android:id="@+id/unmarkAll"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:shape="rectangle"
+        android:layout_width="40dp"
+        android:layout_height="38dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="72dp"
+        android:layout_marginEnd="56dp"
         android:layout_marginTop="8dp"
-        android:text="Unmark all"
+        android:background="@drawable/unchecked_box"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gridview"
-        app:layout_constraintVertical_bias="0.113" />
+        app:layout_constraintVertical_bias="0.277" />
+
+    <Button
+        android:id="@+id/bankCoins"
+        android:layout_width="121dp"
+        android:layout_height="43dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Bank coins"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/unmarkAll"
+        app:layout_constraintHorizontal_bias="0.437"
+        app:layout_constraintStart_toEndOf="@+id/markAll"
+        app:layout_constraintTop_toBottomOf="@+id/gridview"
+        app:layout_constraintVertical_bias="0.258" />
+
+    <TextView
+        android:id="@+id/coinsLeftText"
+        android:layout_width="181dp"
+        android:layout_height="36dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Coins left: "
+        android:textSize="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/gridview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.117" />
+
+    <TextView
+        android:id="@+id/coinsLeftNum"
+        android:layout_width="44dp"
+        android:layout_height="38dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="25"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/gridview"
+        app:layout_constraintEnd_toEndOf="@+id/coinsLeftText"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/coinsLeftText"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.117" />
+
+    <TextView
+        android:id="@+id/sumCoins"
+        android:layout_width="97dp"
+        android:layout_height="27dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Sum coins: "
+        android:textSize="18dp"
+        app:layout_constraintBottom_toTopOf="@+id/gridview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.143"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.797" />
+
+    <TextView
+        android:id="@+id/sumCoinsValue"
+        android:layout_width="40dp"
+        android:layout_height="27dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="0"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toTopOf="@+id/gridview"
+        app:layout_constraintEnd_toStartOf="@+id/goldText"
+        app:layout_constraintHorizontal_bias="0.111"
+        app:layout_constraintStart_toEndOf="@+id/sumCoins"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.794" />
+
+    <TextView
+        android:id="@+id/goldText"
+        android:layout_width="61dp"
+        android:layout_height="27dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Gold: "
+        android:textSize="18dp"
+        app:layout_constraintBottom_toTopOf="@+id/gridview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.713"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.784" />
+
+    <TextView
+        android:id="@+id/GoldValue"
+        android:layout_width="43dp"
+        android:layout_height="27dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="0"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toTopOf="@+id/gridview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/goldText"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.777" />
 
 </android.support.constraint.ConstraintLayout>

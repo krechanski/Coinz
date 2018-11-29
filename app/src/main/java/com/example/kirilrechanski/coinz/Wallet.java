@@ -23,11 +23,7 @@ import java.util.List;
 
 public class Wallet extends AppCompatActivity {
 
-    private FirebaseAuth mAuth;
-    private FirebaseFirestore databaseReference;
-    private FirebaseUser user;
-    private String coinsCollected = "0";
-    private String sumCoins = "0";
+    //List which stores collected coins
     static List<Coin> coins = new ArrayList<>();
 
 
@@ -38,8 +34,7 @@ public class Wallet extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //Coin[] coinsArr = {new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21),new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21),new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21), new Coin("DOLR", 4.33), new Coin("QUID", 5.21) };
-        //List<Coin> coins = new ArrayList<>(Arrays.asList(coinsArr));
+        //Create a gridview with the collected coins and added buttons for markAll, unMarkAll
         List<Coin> selectedCoins = new ArrayList<>();
         int numCoins = coins.size();
 
@@ -75,8 +70,6 @@ public class Wallet extends AppCompatActivity {
                     if (view != null) {
                         view.setBackgroundResource(R.drawable.coin_selected);
                     }
-
-
                 }
             }
         });
@@ -97,11 +90,9 @@ public class Wallet extends AppCompatActivity {
                 }
             }
         });
-
-
     }
 
-
+    //Layout for each item in the gridView
     public static class GridItemView extends FrameLayout {
 
         private TextView textView;
@@ -113,15 +104,6 @@ public class Wallet extends AppCompatActivity {
             imageView = getRootView().findViewById(R.id.coinMarker);
             textView = (TextView) getRootView().findViewById(R.id.coinValue);
 
-        }
-
-        public void display(String text, boolean isSelected) {
-            //textView.setText(text);
-            //display(isSelected);
-        }
-
-        public void display(Coin coin, boolean isSelected) {
-            //textView.setBackgroundResource(isSelected ? R.drawable.coin_selected : R.drawable.coin_notselected);
         }
     }
 }
