@@ -56,5 +56,24 @@ public class Coin {
     public Coin(String currency, double value) {
         this.currency = currency;
         this.value = value;
+
+        switch (currency) {
+            case "DOLR":
+                this.icon = R.drawable.green_marker;
+                break;
+
+            case "SHIL":
+                this.icon = R.drawable.blue_marker;
+                break;
+
+            case "PENY":
+                this.icon = R.drawable.red_marker;
+                break;
+
+            case "QUID":
+                this.icon = R.drawable.yellow_marker;
+                break;
+
+        }
     }
 }
