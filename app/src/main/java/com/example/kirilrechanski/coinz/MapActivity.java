@@ -96,7 +96,7 @@ public class MapActivity extends AppCompatActivity implements
     private FirebaseUser user;
     private int coinsCollected;
     private double sumCoins;
-    static ArrayList<Coin> walletCoins;
+    static List<Feature> coinFeatures = new ArrayList<>();
 
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -362,6 +362,7 @@ public class MapActivity extends AppCompatActivity implements
             setCameraPosition(location);
 
             List<Marker> markerList = map.getMarkers();
+            List<Double> coordinates;
             for (Marker marker : markerList) {
 
                 if (getDistanceFromCurrentPosition(location.getLatitude(), location.getLongitude(),
@@ -378,11 +379,32 @@ public class MapActivity extends AppCompatActivity implements
                             .update("sumCoins", sumCoins);
 
                     //Create coin object from the markers and save it to a List in Wallet activity
-                    Coin coin = new Coin(marker.getTitle(),Double.parseDouble(marker.getSnippet()));
+                    Coin coin = new Coin(marker.getTitle(), Double.parseDouble(marker.getSnippet()));
                     Wallet.coins.add(coin);
                     map.removeMarker(marker);
 
+                    //Saving collected coins in a local file for the Wallet Gridview
+                    String currency = marker.getTitle();
+                    String value = marker.getSnippet();
+                    Double latitude = marker.getPosition().getLatitude();
+                    Double longitude = marker.getPosition().getLongitude();
+
+
+                    Point point = Point.fromLngLat(longitude, latitude);
+                    coordinates = point.coordinates();
+                    Geometry geometry = (Geometry) point;
+
+                    Feature feature = Feature.fromGeometry(geometry);
+                    feature.addStringProperty("value", value);
+                    feature.addStringProperty("currency", currency);
+                    coinFeatures.add(feature);
+                    FeatureCollection featureCollection = FeatureCollection.fromFeatures(coinFeatures);
+                    String coinWallet = featureCollection.toJson();
+                    saveWalletCoins(coinWallet);
                 }
+
+
+
             }
         }
     }

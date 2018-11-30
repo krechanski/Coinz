@@ -2,6 +2,7 @@ package com.example.kirilrechanski.coinz;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -16,12 +17,24 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.JsonObject;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.Geometry;
+import com.mapbox.geojson.Point;
 
 import org.w3c.dom.Text;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Wallet extends AppCompatActivity {
 
@@ -34,6 +47,37 @@ public class Wallet extends AppCompatActivity {
         setContentView(R.layout.activity_wallet);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        String walletCoins = "";
+
+        //Read the collected coins from local storage and show them in the gridview
+        try {
+            FileInputStream fileInputStream = openFileInput("walletcoins.geojson");
+            walletCoins = readStream(fileInputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        FeatureCollection featureCollection = FeatureCollection.fromJson(walletCoins);
+            List<Feature> features;
+            features = featureCollection.features();
+            List<Double> coordinates;
+
+            for (Feature feature:features) {
+                Geometry geometry = feature.geometry();
+                if (geometry.type().equals("Point")) {
+                    Point point = (Point) geometry;
+                    coordinates = point.coordinates();
+                    JsonObject property = feature.properties();
+                    String currency = property.get("currency").toString().replaceAll("^\"|\"$", "");
+                    Double value = property.get("value").getAsDouble();
+
+                    if (coins.isEmpty()) {
+                        Coin coin = new Coin(currency, value);
+                        coins.add(coin);
+                    }
+                }
+
+            }
 
         //Create a gridview with the collected coins and added buttons for markAll, unMarkAll
         List<Coin> selectedCoins = new ArrayList<>();
@@ -99,6 +143,15 @@ public class Wallet extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    //Read input file used to read walletCoins.geojson
+    @NonNull
+    private String readStream(InputStream stream)
+            throws IOException {
+        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(stream))) {
+            return buffer.lines().collect(Collectors.joining("\n"));
+        }
     }
 
     //Layout for each item in the gridView
