@@ -30,8 +30,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.JsonParser;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.GeoJson;
 import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -54,8 +56,12 @@ import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,6 +72,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.example.kirilrechanski.coinz.DownloadCompleteRunner.geoJsonString;
 
 
 public class MapActivity extends AppCompatActivity implements
@@ -88,6 +96,7 @@ public class MapActivity extends AppCompatActivity implements
     private FirebaseUser user;
     private int coinsCollected;
     private double sumCoins;
+    static ArrayList<Coin> walletCoins;
 
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -270,7 +279,6 @@ public class MapActivity extends AppCompatActivity implements
                 e.printStackTrace();
             }
         }
-
     }
 
     //Read input file used to read coinzmap.geojson
@@ -372,8 +380,8 @@ public class MapActivity extends AppCompatActivity implements
                     //Create coin object from the markers and save it to a List in Wallet activity
                     Coin coin = new Coin(marker.getTitle(),Double.parseDouble(marker.getSnippet()));
                     Wallet.coins.add(coin);
-
                     map.removeMarker(marker);
+
                 }
             }
         }
@@ -504,7 +512,18 @@ public class MapActivity extends AppCompatActivity implements
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    //Method used to save the coinz map in local storage
+    public void saveWalletCoins(String currentCoins) {
+        FileOutputStream outputStream;
+        try {
+            outputStream = getApplicationContext().openFileOutput("walletcoins.geojson", Context.MODE_PRIVATE);
+            outputStream.write(currentCoins.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //Minimize the app on back-pressed

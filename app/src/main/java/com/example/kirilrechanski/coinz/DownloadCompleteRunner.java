@@ -23,7 +23,6 @@ public class DownloadCompleteRunner {
     static String result;
     static String geoJsonString;
     static String mapRates;
-    static DecimalFormat df2 = new DecimalFormat(".##");
 
     /*
        Initially save the downloaded string map into geoJsonString. After that create a FeatureCollection,

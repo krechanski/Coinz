@@ -17,6 +17,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +27,6 @@ public class Wallet extends AppCompatActivity {
 
     //List which stores collected coins
     static List<Coin> coins = new ArrayList<>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,14 @@ public class Wallet extends AppCompatActivity {
         //Create a gridview with the collected coins and added buttons for markAll, unMarkAll
         List<Coin> selectedCoins = new ArrayList<>();
         int numCoins = coins.size();
+        double sumMoney = 0;
+        for (Coin c: coins) {
+            sumMoney += c.getValue();
+        }
+        TextView sumCoins = findViewById(R.id.sumCoins);
+        sumCoins.setText(String.format("Coins sum: %.2f", sumMoney));
+
+
 
         GridView gridview = (GridView) findViewById(R.id.gridview);
         ImageAdapter imageAdapter = new ImageAdapter(this, coins);
