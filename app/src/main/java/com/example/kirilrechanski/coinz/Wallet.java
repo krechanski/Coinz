@@ -24,16 +24,19 @@ import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
 
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +45,7 @@ public class Wallet extends AppCompatActivity {
     //List which stores collected coins
     static List<Coin> coins = new ArrayList<>();
     static double gold = 0;
+    public List<Feature> features;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +62,8 @@ public class Wallet extends AppCompatActivity {
             walletCoins = readStream(fileInputStream);
             if (coins.isEmpty()) {
                 FeatureCollection featureCollection = FeatureCollection.fromJson(walletCoins);
-                List<Feature> features;
                 features = featureCollection.features();
                 List<Double> coordinates;
-
                 for (Feature feature : features) {
                     Geometry geometry = feature.geometry();
                     if (geometry.type().equals("Point")) {
@@ -109,7 +111,7 @@ public class Wallet extends AppCompatActivity {
         TextView sumCoins = findViewById(R.id.sumGold);
         sumCoins.setText(String.format("Gold sum: %.2f", sumGold));
 
-        //Create a gridview with the collected coins and added buttons for markAll, unMarkAll
+        //Create a gridview with the collected coins and add buttons for markAll, unMarkAll
         GridView gridview = (GridView) findViewById(R.id.gridview);
         ImageAdapter imageAdapter = new ImageAdapter(this, coins);
         gridview.setAdapter(imageAdapter);
@@ -163,12 +165,11 @@ public class Wallet extends AppCompatActivity {
             }
         });
 
+        //Bank selected coins and remove them from the gridview
         Button bankCoins = findViewById(R.id.bankCoins);
         bankCoins.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
                 for (Coin c : selectedCoins) {
                     switch (c.getCurrency()) {
                         case "QUID":
@@ -187,8 +188,30 @@ public class Wallet extends AppCompatActivity {
                             gold += c.getValue() * MapActivity.SHILrate;
                             break;
                     }
+
                     coins.remove(c);
+
+                    //Iterate through the selected coins, remove them and
+                    //overwrite the walletcoins.geojson with the unbanked coins
+                    Iterator<Feature> iter = features.iterator();
+                    while (iter.hasNext()) {
+                        Feature f = iter.next();
+
+                        if (f.hasProperty("currency")) {
+                            if ((f.getStringProperty("currency").equals(c.getCurrency()))) {
+                                f.getStringProperty("value").equals(c.getValue());
+                                iter.remove();
+                            }
+                        }
+                    }
+
+
+
                     imageAdapter.notifyDataSetChanged();
+                    FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
+                    String remainingCoins = featureCollection.toJson();
+                    saveWalletCoins(remainingCoins);
+
                 }
 
 
@@ -197,12 +220,24 @@ public class Wallet extends AppCompatActivity {
         });
     }
 
-    //Read input file used to read walletCoins.geojson
+    //Read input function used to read walletCoins.geojson
     @NonNull
     private String readStream(InputStream stream)
             throws IOException {
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(stream))) {
             return buffer.lines().collect(Collectors.joining("\n"));
+        }
+    }
+
+    //Method used to overwrite the local file for coins with non-banked coins
+    public void saveWalletCoins(String currentCoins) {
+        FileOutputStream outputStream;
+        try {
+            outputStream = getApplicationContext().openFileOutput("walletcoins.geojson", Context.MODE_PRIVATE);
+            outputStream.write(currentCoins.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -244,5 +279,15 @@ public class Wallet extends AppCompatActivity {
 //                moneyAvaiableValue.setText(sumCoins);
 //            }
 //        });
+
+
+// for (Feature f:features) {
+//         if (f.hasProperty("currency")) {
+//         if ((f.getStringProperty("currency").equals(c.getCurrency()))) {
+//         f.getStringProperty("value").equals(c.getValue());
+//         features.remove(f);
+//         }
+//         }
+//         }
 
 
