@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -186,7 +187,12 @@ public class Wallet extends AppCompatActivity {
                             gold += c.getValue() * MapActivity.SHILrate;
                             break;
                     }
+                    coins.remove(c);
+                    imageAdapter.notifyDataSetChanged();
                 }
+
+
+                Toast.makeText(Wallet.this, String.format("Deposited: %.2f gold", gold), Toast.LENGTH_SHORT).show();
             }
         });
     }
