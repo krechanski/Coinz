@@ -32,11 +32,15 @@
             android:name=".MapActivity"
             android:label="Coinz"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".UsernameActivity"></activity>
+        <activity android:name=".UsernameActivity" />
         <activity
             android:name=".Wallet"
             android:label="@string/title_activity_wallet"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Bank"
+            android:label="Bank">
+        </activity>
     </application>
 
 </manifest>

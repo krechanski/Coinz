@@ -40,6 +40,7 @@ public class Wallet extends AppCompatActivity {
 
     //List which stores collected coins
     static List<Coin> coins = new ArrayList<>();
+    static double gold = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,43 +55,60 @@ public class Wallet extends AppCompatActivity {
         try {
             FileInputStream fileInputStream = openFileInput("walletcoins.geojson");
             walletCoins = readStream(fileInputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        FeatureCollection featureCollection = FeatureCollection.fromJson(walletCoins);
-            List<Feature> features;
-            features = featureCollection.features();
-            List<Double> coordinates;
+            if (coins.isEmpty()) {
+                FeatureCollection featureCollection = FeatureCollection.fromJson(walletCoins);
+                List<Feature> features;
+                features = featureCollection.features();
+                List<Double> coordinates;
 
-            for (Feature feature:features) {
-                Geometry geometry = feature.geometry();
-                if (geometry.type().equals("Point")) {
-                    Point point = (Point) geometry;
-                    coordinates = point.coordinates();
-                    JsonObject property = feature.properties();
-                    String currency = property.get("currency").toString().replaceAll("^\"|\"$", "");
-                    Double value = property.get("value").getAsDouble();
+                for (Feature feature : features) {
+                    Geometry geometry = feature.geometry();
+                    if (geometry.type().equals("Point")) {
+                        Point point = (Point) geometry;
+                        coordinates = point.coordinates();
+                        JsonObject property = feature.properties();
+                        String currency = property.get("currency").toString().replaceAll("^\"|\"$", "");
+                        Double value = property.get("value").getAsDouble();
 
-                    if (coins.isEmpty()) {
                         Coin coin = new Coin(currency, value);
                         coins.add(coin);
                     }
                 }
-
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        //Create a gridview with the collected coins and added buttons for markAll, unMarkAll
+
+        //Used when selecting which coins to deposit to the bank
         List<Coin> selectedCoins = new ArrayList<>();
         int numCoins = coins.size();
-        double sumMoney = 0;
-        for (Coin c: coins) {
-            sumMoney += c.getValue();
+
+        //Calculate how much gold you have based on the collected coins
+        double sumGold = 0;
+        for (Coin c : coins) {
+            switch (c.getCurrency()) {
+                case "QUID":
+                    sumGold += c.getValue() * MapActivity.QUIDrate;
+                    break;
+
+                case "PENY":
+                    sumGold += c.getValue() * MapActivity.PENYrate;
+                    break;
+
+                case "DOLR":
+                    sumGold += c.getValue() * MapActivity.DLRrate;
+                    break;
+
+                case "SHIL":
+                    sumGold += c.getValue() * MapActivity.SHILrate;
+                    break;
+            }
         }
-        TextView sumCoins = findViewById(R.id.sumCoins);
-        sumCoins.setText(String.format("Coins sum: %.2f", sumMoney));
+        TextView sumCoins = findViewById(R.id.sumGold);
+        sumCoins.setText(String.format("Gold sum: %.2f", sumGold));
 
-
-
+        //Create a gridview with the collected coins and added buttons for markAll, unMarkAll
         GridView gridview = (GridView) findViewById(R.id.gridview);
         ImageAdapter imageAdapter = new ImageAdapter(this, coins);
         gridview.setAdapter(imageAdapter);
@@ -139,6 +157,34 @@ public class Wallet extends AppCompatActivity {
                     View view = (View) gridview.getChildAt(i);
                     if (view != null) {
                         view.setBackgroundResource(R.drawable.coin_notselected);
+                    }
+                }
+            }
+        });
+
+        Button bankCoins = findViewById(R.id.bankCoins);
+        bankCoins.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                for (Coin c : selectedCoins) {
+                    switch (c.getCurrency()) {
+                        case "QUID":
+                            gold += c.getValue() * MapActivity.QUIDrate;
+                            break;
+
+                        case "PENY":
+                            gold += c.getValue() * MapActivity.PENYrate;
+                            break;
+
+                        case "DOLR":
+                            gold += c.getValue() * MapActivity.DLRrate;
+                            break;
+
+                        case "SHIL":
+                            gold += c.getValue() * MapActivity.SHILrate;
+                            break;
                     }
                 }
             }

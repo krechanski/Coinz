@@ -221,6 +221,11 @@ public class MapActivity extends AppCompatActivity implements
                 startActivity(new Intent(this, Wallet.class));
                 break;
             }
+
+            case R.id.nav_bank: {
+                startActivity(new Intent(this, Bank.class));
+                break;
+            }
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -402,9 +407,6 @@ public class MapActivity extends AppCompatActivity implements
                     String coinWallet = featureCollection.toJson();
                     saveWalletCoins(coinWallet);
                 }
-
-
-
             }
         }
     }

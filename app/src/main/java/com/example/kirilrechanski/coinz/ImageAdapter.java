@@ -31,13 +31,13 @@ public class ImageAdapter extends BaseAdapter {
     // 3
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     // 4
     @Override
     public Object getItem(int position) {
-        return null;
+        return coins.get(position);
     }
 
     // 5
