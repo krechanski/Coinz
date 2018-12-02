@@ -15,28 +15,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.JsonObject;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
 
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +37,8 @@ public class Wallet extends AppCompatActivity {
     //List which stores collected coins
     static List<Coin> coins = new ArrayList<>();
     static double gold = 0;
-    public List<Feature> features;
+    public List<Feature> features = new ArrayList<>();
+    DecimalFormat df = new DecimalFormat("##.00");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +48,13 @@ public class Wallet extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         String walletCoins = "";
+        if (coins.isEmpty()) {
 
-        //Read the collected coins from local storage and show them in the gridview
-        try {
-            FileInputStream fileInputStream = openFileInput("walletcoins.geojson");
-            walletCoins = readStream(fileInputStream);
-            if (coins.isEmpty()) {
+            //Read the collected coins from local storage and show them in the gridview
+            try {
+                FileInputStream fileInputStream = openFileInput("walletcoins.geojson");
+                walletCoins = readStream(fileInputStream);
+
                 FeatureCollection featureCollection = FeatureCollection.fromJson(walletCoins);
                 features = featureCollection.features();
                 List<Double> coordinates;
@@ -71,15 +65,15 @@ public class Wallet extends AppCompatActivity {
                         coordinates = point.coordinates();
                         JsonObject property = feature.properties();
                         String currency = property.get("currency").toString().replaceAll("^\"|\"$", "");
-                        Double value = property.get("value").getAsDouble();
+                        double value = property.get("value").getAsDouble();
 
                         Coin coin = new Coin(currency, value);
                         coins.add(coin);
                     }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
 
@@ -193,27 +187,26 @@ public class Wallet extends AppCompatActivity {
 
                     //Iterate through the selected coins, remove them and
                     //overwrite the walletcoins.geojson with the unbanked coins
-                    Iterator<Feature> iter = features.iterator();
-                    while (iter.hasNext()) {
-                        Feature f = iter.next();
-
+                    for (int i = 0; i < features.size(); i++) {
+                        Feature f = features.get(i);
                         if (f.hasProperty("currency")) {
-                            if ((f.getStringProperty("currency").equals(c.getCurrency()))) {
-                                f.getStringProperty("value").equals(c.getValue());
-                                iter.remove();
+                            Double value = Double.valueOf(f.getStringProperty("value"));
+                            if ((f.getStringProperty("currency").equals(c.getCurrency())) && value == c.getValue()) {
+                                features.remove(i);
+                                break;
                             }
                         }
                     }
 
-
-
-                    imageAdapter.notifyDataSetChanged();
-                    FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
-                    String remainingCoins = featureCollection.toJson();
-                    saveWalletCoins(remainingCoins);
-
                 }
 
+                imageAdapter.notifyDataSetChanged();
+                FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
+                String remainingCoins = featureCollection.toJson();
+                saveWalletCoins(remainingCoins);
+
+                selectedCoins.clear();
+                imageAdapter.selectedPositions.clear();
 
                 Toast.makeText(Wallet.this, String.format("Deposited: %.2f gold", gold), Toast.LENGTH_SHORT).show();
             }
