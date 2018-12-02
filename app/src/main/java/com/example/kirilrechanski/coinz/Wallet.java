@@ -50,6 +50,7 @@ public class Wallet extends AppCompatActivity {
     private FirebaseFirestore databaseReference;
     private FirebaseUser user;
     int coinsLeftNum = 0;
+    double goldAvaiable = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -241,6 +242,7 @@ public class Wallet extends AppCompatActivity {
                     saveWalletCoins(remainingCoins);
                     coinsLeftNum -= selectedCoins.size();
                     databaseReference.collection("users").document(user.getUid()).update("coinsLeft", coinsLeftNum);
+                    databaseReference.collection("users").document(user.getUid()).update("goldAvailable", gold);
                     TextView coinsLeft = findViewById(R.id.coinsLeftText);
                     coinsLeft.setText(String.format("Coins left: %d", coinsLeftNum));
                     selectedCoins.clear();

@@ -2,16 +2,16 @@ package com.example.kirilrechanski.coinz;
 
 class User {
     public String email;
-    public int coinsCollected;
     public int coinsLeft;
+    public double goldAvailable;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String email, int coinsCollected, int coinsLeft) {
+    public User(String email, int goldAvailable, int coinsLeft) {
         this.email = email;
-        this.coinsCollected = coinsCollected;
         this.coinsLeft = coinsLeft;
+        this.goldAvailable = goldAvailable;
     }
 }

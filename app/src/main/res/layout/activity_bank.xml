@@ -49,7 +49,6 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Coins left: 25"
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="25sp"

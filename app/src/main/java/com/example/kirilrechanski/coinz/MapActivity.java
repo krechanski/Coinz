@@ -254,8 +254,8 @@ public class MapActivity extends AppCompatActivity implements
         if (!downloadDate.equals(currentDate)) {
             //Increment collected coins and update the field in the FireStore Database
             databaseReference.collection("users").document(user.getUid())
-                    .update("coinsCollected", 0);
-
+                    .update("coinsLeft", 25);
+            Wallet.coins.clear();
         }
 
 
