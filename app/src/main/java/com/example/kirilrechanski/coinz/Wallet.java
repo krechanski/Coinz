@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,6 +16,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.JsonObject;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
@@ -38,7 +46,10 @@ public class Wallet extends AppCompatActivity {
     static List<Coin> coins = new ArrayList<>();
     static double gold = 0;
     public List<Feature> features = new ArrayList<>();
-    DecimalFormat df = new DecimalFormat("##.00");
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore databaseReference;
+    private FirebaseUser user;
+    int coinsLeftNum = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +57,21 @@ public class Wallet extends AppCompatActivity {
         setContentView(R.layout.activity_wallet);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        //Get the current user.
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        databaseReference = FirebaseFirestore.getInstance();
+        databaseReference.collection("users").document(user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                coinsLeftNum = Integer.parseInt(task.getResult().get("coinsLeft").toString());
+                TextView coinsLeft = findViewById(R.id.coinsLeftText);
+                coinsLeft.setText(String.format("Coins left: %d",coinsLeftNum));
+            }
+        });
+
 
         String walletCoins = "";
         if (coins.isEmpty()) {
@@ -102,8 +128,6 @@ public class Wallet extends AppCompatActivity {
                     break;
             }
         }
-        TextView sumCoins = findViewById(R.id.sumGold);
-        sumCoins.setText(String.format("Gold sum: %.2f", sumGold));
 
         //Create a gridview with the collected coins and add buttons for markAll, unMarkAll
         GridView gridview = (GridView) findViewById(R.id.gridview);
@@ -164,53 +188,70 @@ public class Wallet extends AppCompatActivity {
         bankCoins.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for (Coin c : selectedCoins) {
-                    switch (c.getCurrency()) {
-                        case "QUID":
-                            gold += c.getValue() * MapActivity.QUIDrate;
-                            break;
+                //Check if the user wants to bank more coins than remaining ones
+                if (selectedCoins.size()> coinsLeftNum) {
+                    Toast.makeText(Wallet.this,
+                            String.format("You can only bank 25 coins per day. Coins left: %d", coinsLeftNum),
+                            Toast.LENGTH_SHORT).show();
+                }
 
-                        case "PENY":
-                            gold += c.getValue() * MapActivity.PENYrate;
-                            break;
+                else {
 
-                        case "DOLR":
-                            gold += c.getValue() * MapActivity.DLRrate;
-                            break;
-
-                        case "SHIL":
-                            gold += c.getValue() * MapActivity.SHILrate;
-                            break;
-                    }
-
-                    coins.remove(c);
-
-                    //Iterate through the selected coins, remove them and
-                    //overwrite the walletcoins.geojson with the unbanked coins
-                    for (int i = 0; i < features.size(); i++) {
-                        Feature f = features.get(i);
-                        if (f.hasProperty("currency")) {
-                            Double value = Double.valueOf(f.getStringProperty("value"));
-                            if ((f.getStringProperty("currency").equals(c.getCurrency())) && value == c.getValue()) {
-                                features.remove(i);
+                    for (Coin c : selectedCoins) {
+                        switch (c.getCurrency()) {
+                            case "QUID":
+                                gold += c.getValue() * MapActivity.QUIDrate;
                                 break;
+
+                            case "PENY":
+                                gold += c.getValue() * MapActivity.PENYrate;
+                                break;
+
+                            case "DOLR":
+                                gold += c.getValue() * MapActivity.DLRrate;
+                                break;
+
+                            case "SHIL":
+                                gold += c.getValue() * MapActivity.SHILrate;
+                                break;
+                        }
+
+                        coins.remove(c);
+
+                        //Iterate through the selected coins, remove them and
+                        //overwrite the walletcoins.geojson with the unbanked coins
+                        for (int i = 0; i < features.size(); i++) {
+                            Feature f = features.get(i);
+                            if (f.hasProperty("currency")) {
+                                Double value = Double.valueOf(f.getStringProperty("value"));
+                                if ((f.getStringProperty("currency").equals(c.getCurrency())) && value == c.getValue()) {
+                                    features.remove(i);
+                                    break;
+                                }
                             }
                         }
                     }
-
+                    /*
+                    Update gridview when a coin is removed, save the remaining ones to local storage,
+                    decrement coinsLeftNum based on the selected coins and update it in the Firestore
+                     */
+                    imageAdapter.notifyDataSetChanged();
+                    FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
+                    String remainingCoins = featureCollection.toJson();
+                    saveWalletCoins(remainingCoins);
+                    coinsLeftNum -= selectedCoins.size();
+                    databaseReference.collection("users").document(user.getUid()).update("coinsLeft", coinsLeftNum);
+                    TextView coinsLeft = findViewById(R.id.coinsLeftText);
+                    coinsLeft.setText(String.format("Coins left: %d", coinsLeftNum));
+                    selectedCoins.clear();
+                    imageAdapter.selectedPositions.clear();
+                    Toast.makeText(Wallet.this, String.format("Deposited: %.2f gold", gold), Toast.LENGTH_SHORT).show();
                 }
-
-                imageAdapter.notifyDataSetChanged();
-                FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
-                String remainingCoins = featureCollection.toJson();
-                saveWalletCoins(remainingCoins);
-
-                selectedCoins.clear();
-                imageAdapter.selectedPositions.clear();
-
-                Toast.makeText(Wallet.this, String.format("Deposited: %.2f gold", gold), Toast.LENGTH_SHORT).show();
             }
         });
+
+        TextView sumCoins = findViewById(R.id.sumGold);
+        sumCoins.setText(String.format("Gold sum: %.2f", sumGold));
     }
 
     //Read input function used to read walletCoins.geojson
@@ -252,11 +293,7 @@ public class Wallet extends AppCompatActivity {
 
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
-//        mAuth = FirebaseAuth.getInstance();
-//        user = mAuth.getCurrentUser();
-//
-//        databaseReference = FirebaseFirestore.getInstance();
-//        DocumentReference docRef = databaseReference.collection("users").document(user.getUid());
+
 //        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
 //            @Override
 //            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -273,14 +310,5 @@ public class Wallet extends AppCompatActivity {
 //            }
 //        });
 
-
-// for (Feature f:features) {
-//         if (f.hasProperty("currency")) {
-//         if ((f.getStringProperty("currency").equals(c.getCurrency()))) {
-//         f.getStringProperty("value").equals(c.getValue());
-//         features.remove(f);
-//         }
-//         }
-//         }
 
 

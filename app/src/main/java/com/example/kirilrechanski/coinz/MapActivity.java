@@ -94,8 +94,6 @@ public class MapActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     private FirebaseFirestore databaseReference;
     private FirebaseUser user;
-    private int coinsCollected;
-    private double sumCoins;
     static List<Feature> coinFeatures = new ArrayList<>();
 
 
@@ -258,8 +256,6 @@ public class MapActivity extends AppCompatActivity implements
             databaseReference.collection("users").document(user.getUid())
                     .update("coinsCollected", 0);
 
-            databaseReference.collection("users").document(user.getUid())
-                    .update("sumCoins", 0);
         }
 
 
@@ -372,16 +368,6 @@ public class MapActivity extends AppCompatActivity implements
 
                 if (getDistanceFromCurrentPosition(location.getLatitude(), location.getLongitude(),
                         marker.getPosition().getLatitude(), marker.getPosition().getLongitude()) <= COLLECTING_DISTANCE) {
-
-                    double coinValue = Double.parseDouble(marker.getSnippet());
-                    sumCoins = sumCoins + coinValue;
-
-                    //Increment collected coins and update the field in the FireStore Database
-                    databaseReference.collection("users").document(user.getUid())
-                            .update("coinsCollected", coinsCollected++);
-
-                    databaseReference.collection("users").document(user.getUid())
-                            .update("sumCoins", sumCoins);
 
                     //Create coin object from the markers and save it to a List in Wallet activity
                     Coin coin = new Coin(marker.getTitle(), Double.parseDouble(marker.getSnippet()));
