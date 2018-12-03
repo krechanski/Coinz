@@ -17,7 +17,7 @@ public class Statistics extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore databaseReference;
     private FirebaseUser user;
-    private float totalDistanceWalked;
+    private float walkedDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,13 +29,26 @@ public class Statistics extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         databaseReference = FirebaseFirestore.getInstance();
 
-        float distanceToday = getDistanceRun(MapActivity.steps);
-
-
-
         TextView distanceWalkedToday = findViewById(R.id.distanceToday);
         TextView totalDistanceWalked = findViewById(R.id.totalDistance);
+
+
+        float distanceToday = getDistanceRun(MapActivity.steps);
         distanceWalkedToday.setText(String.format("Distance walked today: %.2f km", distanceToday ));
+
+        //Get the totaldistancewalked from firestore, add the distance walked today to it,
+        //display it and finally write back totalDistanceWalked to Firestore
+        databaseReference.collection("users").document(user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Float walkedDistance = Float.valueOf(task.getResult().get("totalDistanceWalked").toString());
+                walkedDistance+=distanceToday;
+                totalDistanceWalked.setText(String.format("Total distance walked: %.2f km", walkedDistance));
+                databaseReference.collection("users").document(user.getUid())
+                        .update("totalDistanceWalked", walkedDistance);
+            }
+        });
+
 
     }
 

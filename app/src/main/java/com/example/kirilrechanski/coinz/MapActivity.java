@@ -262,19 +262,16 @@ public class MapActivity extends AppCompatActivity implements
         currentDate = dateFormat.format(date);
         String url = "http://homepages.inf.ed.ac.uk/stg/coinz/" + currentDate + "/coinzmap.geojson";
 
-        //Reset number of coins and sum after the day has ended
+        //Start downloading the map if the download date is different than the current one
         if (!downloadDate.equals(currentDate)) {
+
             //Increment collected coins and update the field in the FireStore Database
             databaseReference.collection("users").document(user.getUid())
                     .update("coinsLeft", 25);
             databaseReference.collection("users").document(user.getUid())
                     .update("steps", 0);
+
             Wallet.coins.clear();
-        }
-
-
-        //Start downloading the map if the download date is different than the current one
-        if (!downloadDate.equals(currentDate)) {
             DownloadFileTask downloadFileTask = new DownloadFileTask();
             downloadDate = currentDate;
             downloadFileTask.execute(url);
@@ -572,6 +569,11 @@ public class MapActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        SharedPreferences settings = getSharedPreferences(PREFERENCE_FILE,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("lastDownloadDate", downloadDate);
+        editor.apply();
         mapView.onDestroy();
     }
 
