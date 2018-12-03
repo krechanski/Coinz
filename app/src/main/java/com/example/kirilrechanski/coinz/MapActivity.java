@@ -5,6 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -77,11 +81,12 @@ import static com.example.kirilrechanski.coinz.DownloadCompleteRunner.geoJsonStr
 
 
 public class MapActivity extends AppCompatActivity implements
-        OnMapReadyCallback, LocationEngineListener, PermissionsListener, NavigationView.OnNavigationItemSelectedListener {
+        OnMapReadyCallback, LocationEngineListener, PermissionsListener, NavigationView.OnNavigationItemSelectedListener{
 
     private final String TAG = "MapActivity";
     private final String PREFERENCE_FILE = "MyPrefsFile"; //For storing preferences
     private final float COLLECTING_DISTANCE = 25;
+    static int steps = 0;
 
     private MapView mapView;
     static MapboxMap map;
@@ -90,14 +95,19 @@ public class MapActivity extends AppCompatActivity implements
     private LocationEngine locationEngine;
     private LocationLayerPlugin locationLayerPlugin;
     private Location originLocation;
-    private String downloadDate = ""; //Format: yyy/mm/dd
+    static String downloadDate = ""; //Format: yyy/mm/dd
     private FirebaseAuth mAuth;
     private FirebaseFirestore databaseReference;
     private FirebaseUser user;
+    private SensorManager mSensorManager;
+    private Sensor mStepCounterSensor;
+    private Sensor mStepDetectorSensor;
+    static String currentDate;
+    static Date date = new Date();
     static List<Feature> coinFeatures = new ArrayList<>();
 
 
-    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+    static DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
 
     //Initialize custom icons
@@ -124,7 +134,6 @@ public class MapActivity extends AppCompatActivity implements
 
         // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(R.layout.activity_nav_drawer);
-
 
         //Get the email of current user.
         mAuth = FirebaseAuth.getInstance();
@@ -224,6 +233,10 @@ public class MapActivity extends AppCompatActivity implements
                 startActivity(new Intent(this, Bank.class));
                 break;
             }
+            case R.id.nav_stats: {
+                startActivity(new Intent(this, Statistics.class));
+                break;
+            }
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -246,8 +259,7 @@ public class MapActivity extends AppCompatActivity implements
         markerQUID = getIcon(R.drawable.yellow_marker);
 
         //Get the current date
-        Date date = new Date();
-        String currentDate = dateFormat.format(date);
+        currentDate = dateFormat.format(date);
         String url = "http://homepages.inf.ed.ac.uk/stg/coinz/" + currentDate + "/coinzmap.geojson";
 
         //Reset number of coins and sum after the day has ended
@@ -255,6 +267,8 @@ public class MapActivity extends AppCompatActivity implements
             //Increment collected coins and update the field in the FireStore Database
             databaseReference.collection("users").document(user.getUid())
                     .update("coinsLeft", 25);
+            databaseReference.collection("users").document(user.getUid())
+                    .update("steps", 0);
             Wallet.coins.clear();
         }
 
@@ -361,6 +375,10 @@ public class MapActivity extends AppCompatActivity implements
         if (location != null) {
             originLocation = location;
             setCameraPosition(location);
+
+            steps++;
+            Toast.makeText(this, String.format("Steps: %d", steps), Toast.LENGTH_SHORT).show();
+            databaseReference.collection("users").document(user.getUid()).update("steps", steps);
 
             List<Marker> markerList = map.getMarkers();
             List<Double> coordinates;

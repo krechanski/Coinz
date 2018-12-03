@@ -106,7 +106,7 @@ public class LogInActivity extends AppCompatActivity implements
 
                             if (currentUser != null) {
                                 mDatabase.collection("users").document(currentUser.getUid())
-                                        .set(new User(email,0, 25));
+                                        .set(new User(email,0, 25,0,0));
 
                             }
                             startActivity(new Intent(LogInActivity.this, UsernameActivity.class));

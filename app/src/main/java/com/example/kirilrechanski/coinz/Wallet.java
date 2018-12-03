@@ -52,6 +52,7 @@ public class Wallet extends AppCompatActivity {
     int coinsLeftNum = 0;
     double goldAvaiable = 0;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,38 +70,49 @@ public class Wallet extends AppCompatActivity {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 coinsLeftNum = Integer.parseInt(task.getResult().get("coinsLeft").toString());
                 TextView coinsLeft = findViewById(R.id.coinsLeftText);
-                coinsLeft.setText(String.format("Coins left: %d",coinsLeftNum));
+                coinsLeft.setText(String.format("Coins left: %d", coinsLeftNum));
             }
         });
 
-
+        /*
+        If the current date is the same as the download date, read the coins from local storage.
+        If not, clear all the coins from the wallet and overwrite the local file.
+         */
         String walletCoins = "";
-        if (coins.isEmpty()) {
+        if (MapActivity.downloadDate.equals(MapActivity.currentDate)) {
+            if (coins.isEmpty()) {
+                //Read the collected coins from local storage and show them in the gridview
+                try {
+                    FileInputStream fileInputStream = openFileInput("walletcoins.geojson");
+                    walletCoins = readStream(fileInputStream);
 
-            //Read the collected coins from local storage and show them in the gridview
-            try {
-                FileInputStream fileInputStream = openFileInput("walletcoins.geojson");
-                walletCoins = readStream(fileInputStream);
+                    FeatureCollection featureCollection = FeatureCollection.fromJson(walletCoins);
+                    features = featureCollection.features();
+                    List<Double> coordinates;
+                    for (Feature feature : features) {
+                        Geometry geometry = feature.geometry();
+                        if (geometry.type().equals("Point")) {
+                            Point point = (Point) geometry;
+                            coordinates = point.coordinates();
+                            JsonObject property = feature.properties();
+                            String currency = property.get("currency").toString().replaceAll("^\"|\"$", "");
+                            double value = property.get("value").getAsDouble();
 
-                FeatureCollection featureCollection = FeatureCollection.fromJson(walletCoins);
-                features = featureCollection.features();
-                List<Double> coordinates;
-                for (Feature feature : features) {
-                    Geometry geometry = feature.geometry();
-                    if (geometry.type().equals("Point")) {
-                        Point point = (Point) geometry;
-                        coordinates = point.coordinates();
-                        JsonObject property = feature.properties();
-                        String currency = property.get("currency").toString().replaceAll("^\"|\"$", "");
-                        double value = property.get("value").getAsDouble();
-
-                        Coin coin = new Coin(currency, value);
-                        coins.add(coin);
+                            Coin coin = new Coin(currency, value);
+                            coins.add(coin);
+                        }
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        }
+
+        else {
+            MapActivity.coinFeatures.clear();
+            FeatureCollection featureCollection = FeatureCollection.fromFeatures(MapActivity.coinFeatures);
+            String coinWallet = featureCollection.toJson();
+            saveWalletCoins(coinWallet);
         }
 
 
@@ -190,13 +202,11 @@ public class Wallet extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Check if the user wants to bank more coins than remaining ones
-                if (selectedCoins.size()> coinsLeftNum) {
+                if (selectedCoins.size() > coinsLeftNum) {
                     Toast.makeText(Wallet.this,
                             String.format("You can only bank 25 coins per day. Coins left: %d", coinsLeftNum),
                             Toast.LENGTH_SHORT).show();
-                }
-
-                else {
+                } else {
 
                     for (Coin c : selectedCoins) {
                         switch (c.getCurrency()) {

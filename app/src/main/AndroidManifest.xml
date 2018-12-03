@@ -41,6 +41,10 @@
             android:name=".Bank"
             android:label="Bank">
         </activity>
+        <activity
+            android:name=".Statistics"
+            android:label="Statistics">
+        </activity>
     </application>
 
 </manifest>
