@@ -1,14 +1,11 @@
 package com.example.kirilrechanski.coinz;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -27,18 +24,15 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.JsonParser;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.GeoJson;
 import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -61,12 +55,9 @@ import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -79,15 +70,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.example.kirilrechanski.coinz.DownloadCompleteRunner.geoJsonString;
 
 
 public class MapActivity extends AppCompatActivity implements
         OnMapReadyCallback, LocationEngineListener, PermissionsListener, NavigationView.OnNavigationItemSelectedListener {
 
-    private final String TAG = "MapActivity";
     private final String PREFERENCE_FILE = "MyPrefsFile"; //For storing preferences
-    private final float COLLECTING_DISTANCE = 25;
     static int steps = 0;
 
     private MapView mapView;
@@ -98,7 +86,6 @@ public class MapActivity extends AppCompatActivity implements
     private LocationLayerPlugin locationLayerPlugin;
     private Location originLocation;
     static String downloadDate = ""; //Format: yyy/mm/dd
-    private FirebaseAuth mAuth;
     private FirebaseFirestore databaseReference;
     private FirebaseUser user;
     static String currentDate;
@@ -106,6 +93,7 @@ public class MapActivity extends AppCompatActivity implements
     static List<Feature> coinFeatures = new ArrayList<>();
 
 
+    @SuppressLint("SimpleDateFormat")
     static DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
 
@@ -123,6 +111,7 @@ public class MapActivity extends AppCompatActivity implements
     static double QUIDrate;
 
 
+    @SuppressLint("LogNotTimber")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,7 +124,7 @@ public class MapActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_nav_drawer);
 
         //Get the email of current user.
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
 
@@ -164,18 +153,15 @@ public class MapActivity extends AppCompatActivity implements
         //Set the profile name in navDrawer to user's Username
         databaseReference = FirebaseFirestore.getInstance();
         DocumentReference docRef = databaseReference.collection("users").document(user.getUid());
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document != null) {
-                        String usernameGet = document.getString("username");
-                        TextView usernameNavDrawer = headerView.findViewById(R.id.navUsername);
-                        usernameNavDrawer.setText(usernameGet);
-                    } else {
-                        Log.d("Error", "get username failed with ", task.getException());
-                    }
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document != null) {
+                    String usernameGet = document.getString("username");
+                    TextView usernameNavDrawer = headerView.findViewById(R.id.navUsername);
+                    usernameNavDrawer.setText(usernameGet);
+                } else {
+                    Log.d("Error", "get username failed with ", task.getException());
                 }
             }
         });
@@ -202,7 +188,7 @@ public class MapActivity extends AppCompatActivity implements
         DocumentReference docRef = db.collection("users").document(user.getUid());
         docRef.get().addOnCompleteListener(task -> {
             if (Objects.requireNonNull(task.getResult()).contains("hasNotification")) {
-                if (Objects.requireNonNull(task).getResult().getBoolean("hasNotification")) {
+                if (Objects.requireNonNull(Objects.requireNonNull(task).getResult()).getBoolean("hasNotification")) {
                     NavigationView navigationView = findViewById(R.id.nav_view);
                     navigationView.getMenu().getItem(0).setIconTintMode(null).setIcon(R.drawable.has_notification_icon);
                 }
@@ -223,7 +209,7 @@ public class MapActivity extends AppCompatActivity implements
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
@@ -306,7 +292,7 @@ public class MapActivity extends AppCompatActivity implements
         //If the map is already downloaded locally, read it and call DownloadCompleteRunner
         else {
             mapDownloaded = true;
-            String geoJsonString = "";
+            String geoJsonString;
             try {
                 FileInputStream fileInputStream = openFileInput("coinzmap.geojson");
                 geoJsonString = readStream(fileInputStream);
@@ -405,6 +391,7 @@ public class MapActivity extends AppCompatActivity implements
 
             List<Marker> markerList = map.getMarkers();
             for (Marker marker : markerList) {
+                float COLLECTING_DISTANCE = 25;
                 if (getDistanceFromCurrentPosition(location.getLatitude(), location.getLongitude(),
                         marker.getPosition().getLatitude(), marker.getPosition().getLongitude()) <= COLLECTING_DISTANCE) {
 
@@ -423,6 +410,7 @@ public class MapActivity extends AppCompatActivity implements
     }
 
     //Used to calculate distance between the user and a target
+    @SuppressLint("UseValueOf")
     public static float getDistanceFromCurrentPosition(double lat1, double lng1, double lat2, double lng2) {
         double earthRadius = 6371000;
 
@@ -460,6 +448,7 @@ public class MapActivity extends AppCompatActivity implements
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    @SuppressLint("LogNotTimber")
     @SuppressWarnings({"MissingPermission"})
     @Override
     protected void onStart() {
@@ -482,6 +471,7 @@ public class MapActivity extends AppCompatActivity implements
                 Context.MODE_PRIVATE);
         // use ”” as the default value (this might be the first time the app is run)
         downloadDate = settings.getString("lastDownloadDate", "");
+        String TAG = "MapActivity";
         Log.d(TAG, "[onStart] Recalled lastDownloadDate is ’" + downloadDate + "’");
     }
 
@@ -521,7 +511,7 @@ public class MapActivity extends AppCompatActivity implements
 
             Point point = Point.fromLngLat(longitude, latitude);
             coordinatesMarker = point.coordinates();
-            Geometry geometry = (Geometry) point;
+            Geometry geometry = point;
 
             Feature feature = Feature.fromGeometry(geometry);
             feature.addStringProperty("value", value);

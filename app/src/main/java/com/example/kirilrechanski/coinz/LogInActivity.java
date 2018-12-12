@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016 Google Inc. All Rights Reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 
 package com.example.kirilrechanski.coinz;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,9 +27,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -84,78 +81,74 @@ public class LogInActivity extends AppCompatActivity implements
     }
     // [END on_start_check_user]
 
+    @SuppressLint("LogNotTimber")
     private void createAccount(String email, String password) {
         Log.d(TAG, "createAccount:" + email);
-        if (!validateForm()) {
+        if (validateForm()) {
             return;
         }
 
 
         // [START create_user_with_email]
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("TESTING", "createUserWithEmail:success");
-                            Toast.makeText(LogInActivity.this, "Successfully created an account!",
-                                    Toast.LENGTH_SHORT).show();
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("TESTING", "createUserWithEmail:success");
+                        Toast.makeText(LogInActivity.this, "Successfully created an account!",
+                                Toast.LENGTH_SHORT).show();
 
-                            FirebaseFirestore mDatabase = FirebaseFirestore.getInstance();
-                            mAuth = FirebaseAuth.getInstance();
-                            FirebaseUser currentUser = mAuth.getCurrentUser();
+                        FirebaseFirestore mDatabase = FirebaseFirestore.getInstance();
+                        mAuth = FirebaseAuth.getInstance();
+                        FirebaseUser currentUser = mAuth.getCurrentUser();
 
-                            if (currentUser != null) {
-                                mDatabase.collection("users").document(currentUser.getUid())
-                                        .set(new User(email,0, 25,0,0,
-                                                new ArrayList<>(), new ArrayList<>(), false));
+                        if (currentUser != null) {
+                            mDatabase.collection("users").document(currentUser.getUid())
+                                    .set(new User(email,0, 25,0,0,
+                                            new ArrayList<>(), new ArrayList<>(), false));
 
-                            }
-                            startActivity(new Intent(LogInActivity.this, UsernameActivity.class));
-                            finish();
-
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("TESTING", "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(LogInActivity.this, "An account already exists with that email.",
-                                    Toast.LENGTH_SHORT).show();
                         }
+                        startActivity(new Intent(LogInActivity.this, UsernameActivity.class));
+                        finish();
+
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w("TESTING", "createUserWithEmail:failure", task.getException());
+                        Toast.makeText(LogInActivity.this, "An account already exists with that email.",
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
         // [END create_user_with_email]
     }
 
 
+    @SuppressLint("LogNotTimber")
     private void signIn(String email, String password) {
         Log.d(TAG, "signIn:" + email);
-        if (!validateForm()) {
+        if (validateForm()) {
             return;
         }
 
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
 
-                            startActivity(new Intent(LogInActivity.this, MapActivity.class));
-                            finish();
+                        startActivity(new Intent(LogInActivity.this, MapActivity.class));
+                        finish();
 
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LogInActivity.this, "Incorrect email or password.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-
-                        // [START_EXCLUDE]
-                        if (!task.isSuccessful()) {
-                            mStatusTextView.setText(R.string.auth_failed);
-                        }
-                        // [END_EXCLUDE]
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithEmail:failure", task.getException());
+                        Toast.makeText(LogInActivity.this, "Incorrect email or password.",
+                                Toast.LENGTH_SHORT).show();
                     }
+
+                    // [START_EXCLUDE]
+                    if (!task.isSuccessful()) {
+                        mStatusTextView.setText(R.string.auth_failed);
+                    }
+                    // [END_EXCLUDE]
                 });
         // [END sign_in_with_email]
     }
@@ -166,6 +159,7 @@ public class LogInActivity extends AppCompatActivity implements
         //updateUI(null);
     }
 
+    @SuppressLint("LogNotTimber")
     private void sendEmailVerification() {
         // Disable button
         findViewById(R.id.verifyEmailButton).setEnabled(false);
@@ -173,26 +167,24 @@ public class LogInActivity extends AppCompatActivity implements
         // Send verification email
         // [START send_email_verification]
         final FirebaseUser user = mAuth.getCurrentUser();
+        assert user != null;
         user.sendEmailVerification()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // [START_EXCLUDE]
-                        // Re-enable button
-                        findViewById(R.id.verifyEmailButton).setEnabled(true);
+                .addOnCompleteListener(this, task -> {
+                    // [START_EXCLUDE]
+                    // Re-enable button
+                    findViewById(R.id.verifyEmailButton).setEnabled(true);
 
-                        if (task.isSuccessful()) {
-                            Toast.makeText(LogInActivity.this,
-                                    "Verification email sent to " + user.getEmail(),
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.e(TAG, "sendEmailVerification", task.getException());
-                            Toast.makeText(LogInActivity.this,
-                                    "Failed to send verification email.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                        // [END_EXCLUDE]
+                    if (task.isSuccessful()) {
+                        Toast.makeText(LogInActivity.this,
+                                "Verification email sent to " + user.getEmail(),
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.e(TAG, "sendEmailVerification", task.getException());
+                        Toast.makeText(LogInActivity.this,
+                                "Failed to send verification email.",
+                                Toast.LENGTH_SHORT).show();
                     }
+                    // [END_EXCLUDE]
                 });
         // [END send_email_verification]
     }
@@ -216,7 +208,7 @@ public class LogInActivity extends AppCompatActivity implements
             mPasswordField.setError(null);
         }
 
-        return valid;
+        return !valid;
     }
 
     @Override

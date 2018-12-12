@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class NotificationsActivity extends AppCompatActivity {
     ListView listView;
     private FirebaseAuth mAuth;

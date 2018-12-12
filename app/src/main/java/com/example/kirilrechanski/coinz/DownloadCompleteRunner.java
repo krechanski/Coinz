@@ -1,6 +1,6 @@
 package com.example.kirilrechanski.coinz;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 
 import com.google.gson.JsonObject;
 import com.mapbox.geojson.Feature;
@@ -13,14 +13,9 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileOutputStream;
-import java.text.DecimalFormat;
 import java.util.List;
 
-import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
-
 public class DownloadCompleteRunner {
-    static String result;
     static String geoJsonString;
     static String mapRates;
 
@@ -31,17 +26,12 @@ public class DownloadCompleteRunner {
        to %.2f value.
      */
 
+    @SuppressLint("DefaultLocale")
     public static void downloadComplete(String result) {
-        DownloadCompleteRunner.result = result;
         geoJsonString = result;
 
         int ratesM = geoJsonString.indexOf("features") - 1;
         mapRates = geoJsonString.substring(0, ratesM);
-
-        //Save the coinzMap if it hasn't been already
-        if (!MapActivity.mapDownloaded) {
-            saveFile(result);
-        }
 
         //Extracting the exchange rate for every coin
         try {
@@ -61,17 +51,20 @@ public class DownloadCompleteRunner {
         features = featureCollection.features();
         List<Double> coordinates;
 
+        assert features != null;
         for (Feature feature : features) {
             Geometry geometry = feature.geometry();
+            assert geometry != null;
             if (geometry.type().equals("Point")) {
                 Point point = (Point) geometry;
                 coordinates = point.coordinates();
                 JsonObject property = feature.properties();
-                String currency = property.get("currency").toString().replaceAll("^\"|\"$", "");
-                Double value = property.get("value").getAsDouble();
+                String currency = property != null ? property.get("currency").toString().replaceAll("^\"|\"$", "") : null;
+                Double value = property != null ? property.get("value").getAsDouble() : 0;
                 MarkerOptions markerOptions = new MarkerOptions();
 
                 // Place custom markers on the currencies
+                assert currency != null;
                 switch (currency) {
                     case "DOLR":
                         MapActivity.map.addMarker(markerOptions.title(currency)
@@ -105,17 +98,5 @@ public class DownloadCompleteRunner {
 
             }
         }
-    }
-
-    public static void saveFile(String currentMap) {
-        FileOutputStream outputStream;
-        try {
-            outputStream = getApplicationContext().openFileOutput("coinzmap.geojson", Context.MODE_PRIVATE);
-            outputStream.write(currentMap.getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 }

@@ -14,9 +14,6 @@ public class Coin {
         return currency;
     }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
 
     public double getValue() {
         return value;
@@ -26,11 +23,8 @@ public class Coin {
         this.value = value;
     }
 
-    public Coin() {
 
-    }
-
-    public Coin(String currency, double value) {
+    Coin(String currency, double value) {
         this.currency = currency;
         this.value = value;
 

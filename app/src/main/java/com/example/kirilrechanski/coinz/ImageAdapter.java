@@ -1,5 +1,6 @@
 package com.example.kirilrechanski.coinz;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,7 @@ public class ImageAdapter extends BaseAdapter {
     public List selectedPositions = new ArrayList();
 
     // 1
-    public ImageAdapter(Context context, List<Coin> coins) {
+    ImageAdapter(Context context, List<Coin> coins) {
         this.mContext = context;
         this.coins = coins;
     }
@@ -41,6 +42,7 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     // 5
+    @SuppressLint("InflateParams")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final Coin coin = coins.get(position);
@@ -48,15 +50,15 @@ public class ImageAdapter extends BaseAdapter {
 
 
         // 2
-        if (convertView == null) {
+        if (null == convertView) {
             final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
             convertView = layoutInflater.inflate(R.layout.coin_layout, null);
         }
 
         // 3
-        final ImageView coinMarker = (ImageView) convertView.findViewById(R.id.coinMarker);
-        final TextView coinCurrency = (TextView) convertView.findViewById(R.id.coinCurrency);
-        final TextView coinValue = (TextView) convertView.findViewById(R.id.coinValue);
+        final ImageView coinMarker = convertView.findViewById(R.id.coinMarker);
+        final TextView coinCurrency = convertView.findViewById(R.id.coinCurrency);
+        final TextView coinValue = convertView.findViewById(R.id.coinValue);
 
         // 4
         coinMarker.setImageResource(coin.getIcon());
