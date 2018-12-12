@@ -39,16 +39,18 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Bank"
-            android:label="Bank">
-        </activity>
+            android:label="Bank" />
         <activity
             android:name=".Statistics"
-            android:label="Statistics"></activity>
+            android:label="Statistics" />
         <activity
             android:name=".SendCoinsActivity"
             android:label="Send coins to a user"
-            android:theme="@style/Theme.AppCompat.Dialog">
-        </activity>
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".SendCoinsWallet"
+            android:label="Wallet"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Wallet extends AppCompatActivity {
+public class SendCoinsWallet extends AppCompatActivity {
 
     //List which stores collected coins
     private List<Coin> coins = new ArrayList<>();
@@ -60,7 +60,7 @@ public class Wallet extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wallet);
+        setContentView(R.layout.activity_send_coins_wallet);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -79,7 +79,7 @@ public class Wallet extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 coinsLeftNum = Integer.parseInt(task.getResult().get("coinsLeft").toString());
-                TextView coinsLeft = findViewById(R.id.coinsLeftText);
+                TextView coinsLeft = findViewById(R.id.coinsLeftTextSendCoins);
                 coinsLeft.setText(String.format("Coins left: %d", coinsLeftNum));
             }
         });
@@ -132,8 +132,8 @@ public class Wallet extends AppCompatActivity {
                     }
 
                     //Create a gridview with the collected coins and add buttons for markAll, unMarkAll
-                    GridView gridview = (GridView) findViewById(R.id.gridview);
-                    ImageAdapter imageAdapter = new ImageAdapter(Wallet.this, coins);
+                    GridView gridview = (GridView) findViewById(R.id.gridViewSendCoins);
+                    ImageAdapter imageAdapter = new ImageAdapter(SendCoinsWallet.this, coins);
                     gridview.setAdapter(imageAdapter);
                     gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         public void onItemClick(AdapterView<?> parent, View v,
@@ -151,7 +151,7 @@ public class Wallet extends AppCompatActivity {
                         }
                     });
 
-                    Button markAll = (Button) findViewById(R.id.markAll);
+                    Button markAll = (Button) findViewById(R.id.markAllSendCoins);
                     markAll.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -169,7 +169,7 @@ public class Wallet extends AppCompatActivity {
                     });
 
 
-                    Button unmarkAll = findViewById(R.id.unmarkAll);
+                    Button unmarkAll = findViewById(R.id.unmarkAllSendCoins);
                     unmarkAll.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -185,61 +185,84 @@ public class Wallet extends AppCompatActivity {
                         }
                     });
 
-                    //Bank selected coins and remove them from the gridview
-                    Button bankCoins = findViewById(R.id.bankCoins);
-                    bankCoins.setOnClickListener(new View.OnClickListener() {
+
+                    //Send selected coins to another user
+                    Button sendCoins = findViewById(R.id.sendCoinsWallet);
+                    sendCoins.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            //Check if the user wants to bank more coins than remaining ones
-                            if (selectedCoins.size() > coinsLeftNum) {
-                                Toast.makeText(Wallet.this,
-                                        String.format("You can only bank 25 coins per day. Coins left: %d", coinsLeftNum),
-                                        Toast.LENGTH_SHORT).show();
-                            } else {
-                                for (Coin c : selectedCoins) {
-                                    switch (c.getCurrency()) {
-                                        case "QUID":
-                                            gold += c.getValue() * MapActivity.QUIDrate;
-                                            break;
+                            databaseReference.collection("users").document(user.getUid()).get()
+                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                            Integer coinsRemaining = Integer.parseInt(String.valueOf(task.getResult().get("coinsLeft")));
+                                            if (coinsRemaining != 0) {
+                                                Toast.makeText(SendCoinsWallet.this, "You need to bank all 25 coins, " +
+                                                        "before sending one", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                for (Coin c : selectedCoins) {
+                                                    switch (c.getCurrency()) {
+                                                        case "QUID":
+                                                            gold += c.getValue() * MapActivity.QUIDrate;
+                                                            break;
 
-                                        case "PENY":
-                                            gold += c.getValue() * MapActivity.PENYrate;
-                                            break;
+                                                        case "PENY":
+                                                            gold += c.getValue() * MapActivity.PENYrate;
+                                                            break;
 
-                                        case "DOLR":
-                                            gold += c.getValue() * MapActivity.DLRrate;
-                                            break;
+                                                        case "DOLR":
+                                                            gold += c.getValue() * MapActivity.DLRrate;
+                                                            break;
 
-                                        case "SHIL":
-                                            gold += c.getValue() * MapActivity.SHILrate;
-                                            break;
-                                    }
+                                                        case "SHIL":
+                                                            gold += c.getValue() * MapActivity.SHILrate;
+                                                            break;
+                                                    }
 
-                                    coins.remove(c);
-                                    String currency = c.getCurrency();
-                                    double value = c.getValue();
-                                    databaseReference.collection("users").document(user.getUid())
-                                            .update("wallet", FieldValue.arrayRemove(currency + " " + value));
-                                }
+                                                    coins.remove(c);
+                                                    String currency = c.getCurrency();
+                                                    double value = c.getValue();
 
-                                /*
-                                Update gridview when a coin is removed, save the remaining ones to local storage,
-                                decrement coinsLeftNum based on the selected coins and update it in the Firestore
-                                 */
-                                imageAdapter.notifyDataSetChanged();
-                                coinsLeftNum -= selectedCoins.size();
-                                databaseReference.collection("users").document(user.getUid()).update("coinsLeft", coinsLeftNum);
-                                databaseReference.collection("users").document(user.getUid()).update("goldAvailable", gold);
-                                TextView coinsLeft = findViewById(R.id.coinsLeftText);
-                                coinsLeft.setText(String.format("Coins left: %d", coinsLeftNum));
-                                selectedCoins.clear();
-                                imageAdapter.selectedPositions.clear();
-                                Toast.makeText(Wallet.this, String.format("Deposited: %.2f gold", gold), Toast.LENGTH_SHORT).show();
-                            }
+                                                    //Removes the selected coin from the senders' wallet
+                                                    databaseReference.collection("users").document(user.getUid())
+                                                            .update("wallet", FieldValue.arrayRemove(currency + " " + value));
+
+                                            /*
+                                            Get a collectionReference to users, after that get the document
+                                            which matches the recpients' username, get the goldAvaiable field
+                                            and update it with the selected coins' value
+                                             */
+                                                    CollectionReference cf = databaseReference.collection("users");
+
+                                                    Query firstQuery = cf.whereEqualTo("username", SendCoinsActivity.usernameString);
+
+                                                    firstQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                            String docId = "";
+                                                            QuerySnapshot name = task.getResult();
+                                                            List<DocumentSnapshot> snapshots = name.getDocuments();
+                                                            for (DocumentSnapshot ds : snapshots) {
+                                                                docId = ds.getId();
+                                                                Double goldValue = Double.parseDouble(snapshots.get(0).get("goldAvailable").toString());
+                                                                goldValue += gold;
+                                                                databaseReference.collection("users")
+                                                                        .document(docId).update("goldAvailable", goldValue);
+                                                            }
+                                                        }
+                                                    });
+                                                }
+
+                                                imageAdapter.notifyDataSetChanged();
+                                            }
+                                        }
+                                    });
+
+
                         }
                     });
 
-                    TextView sumCoins = findViewById(R.id.sumGold);
+                    TextView sumCoins = findViewById(R.id.sumGoldSendCoins);
                     sumCoins.setText(String.format("Gold sum: %.2f", sumGold));
                 }
 

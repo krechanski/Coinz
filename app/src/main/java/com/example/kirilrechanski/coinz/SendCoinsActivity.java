@@ -29,7 +29,7 @@ public class SendCoinsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 usernameString = usernameText.getText().toString();
-                startActivity(new Intent(SendCoinsActivity.this, Wallet.class));
+                startActivity(new Intent(SendCoinsActivity.this, SendCoinsWallet.class));
             }
         });
 

@@ -94,4 +94,5 @@
     <string name="title_activity_wallet">Wallet</string>
     <string name="title_activity_test">test</string>
     <string name="title_activity_send_coins">SendCoinsActivity</string>
+    <string name="title_activity_send_coins_wallet">SendCoinsWallet</string>
 </resources>

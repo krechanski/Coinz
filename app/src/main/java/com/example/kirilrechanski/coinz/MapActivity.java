@@ -378,7 +378,6 @@ public class MapActivity extends AppCompatActivity implements
             setCameraPosition(location);
 
             steps++;
-            Toast.makeText(this, String.format("Steps: %d", steps), Toast.LENGTH_SHORT).show();
             databaseReference.collection("users").document(user.getUid()).update("steps", steps);
 
             List<Marker> markerList = map.getMarkers();

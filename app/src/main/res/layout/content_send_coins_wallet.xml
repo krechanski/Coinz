@@ -5,12 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".Wallet"
-    tools:showIn="@layout/activity_wallet">
+    tools:context=".SendCoinsWallet"
+    tools:showIn="@layout/activity_send_coins_wallet">
 
 
     <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/gridview"
+        android:id="@+id/gridViewSendCoins"
         android:layout_width="340dp"
         android:layout_height="233dp"
         android:layout_marginBottom="8dp"
@@ -30,7 +30,7 @@
         app:layout_constraintVertical_bias="0.301" />
 
     <Button
-        android:id="@+id/markAll"
+        android:id="@+id/markAllSendCoins"
         android:layout_width="42dp"
         android:layout_height="40dp"
         android:layout_marginBottom="8dp"
@@ -39,14 +39,14 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/check_tick"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/unmarkAll"
+        app:layout_constraintEnd_toStartOf="@+id/unmarkAllSendCoins"
         app:layout_constraintHorizontal_bias="0.23"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gridview"
+        app:layout_constraintTop_toBottomOf="@+id/gridViewSendCoins"
         app:layout_constraintVertical_bias="0.288" />
 
     <Button
-        android:id="@+id/unmarkAll"
+        android:id="@+id/unmarkAllSendCoins"
         android:shape="rectangle"
         android:layout_width="40dp"
         android:layout_height="38dp"
@@ -56,27 +56,27 @@
         android:background="@drawable/unchecked_box"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gridview"
+        app:layout_constraintTop_toBottomOf="@+id/gridViewSendCoins"
         app:layout_constraintVertical_bias="0.277" />
 
     <Button
-        android:id="@+id/bankCoins"
+        android:id="@+id/sendCoinsWallet"
         android:layout_width="121dp"
         android:layout_height="43dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Bank coins"
+        android:text="Send coins"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/unmarkAll"
+        app:layout_constraintEnd_toStartOf="@+id/unmarkAllSendCoins"
         app:layout_constraintHorizontal_bias="0.437"
-        app:layout_constraintStart_toEndOf="@+id/markAll"
-        app:layout_constraintTop_toBottomOf="@+id/gridview"
+        app:layout_constraintStart_toEndOf="@+id/markAllSendCoins"
+        app:layout_constraintTop_toBottomOf="@+id/gridViewSendCoins"
         app:layout_constraintVertical_bias="0.258" />
 
     <TextView
-        android:id="@+id/coinsLeftText"
+        android:id="@+id/coinsLeftTextSendCoins"
         android:layout_width="181dp"
         android:layout_height="36dp"
         android:layout_marginBottom="8dp"
@@ -87,7 +87,7 @@
         android:textColor="#000000"
         android:textSize="25dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/gridview"
+        app:layout_constraintBottom_toTopOf="@+id/gridViewSendCoins"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
@@ -95,7 +95,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/sumGold"
+        android:id="@+id/sumGoldSendCoins"
         android:layout_width="261dp"
         android:layout_height="59dp"
         android:layout_marginBottom="8dp"
@@ -106,7 +106,7 @@
         android:textColor="#695050"
         android:textSize="25dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/gridview"
+        app:layout_constraintBottom_toTopOf="@+id/gridViewSendCoins"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/coinsLeftText"
