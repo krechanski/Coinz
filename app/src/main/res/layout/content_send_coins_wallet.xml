@@ -109,7 +109,7 @@
         app:layout_constraintBottom_toTopOf="@+id/gridViewSendCoins"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/coinsLeftText"
+        app:layout_constraintTop_toBottomOf="@+id/coinsLeftTextSendCoins"
         app:layout_constraintVertical_bias="0.0" />
 
 
