@@ -235,6 +235,11 @@ public class MapActivity extends AppCompatActivity implements
                 startActivity(new Intent(this, Statistics.class));
                 break;
             }
+
+            case R.id.nav_send_coin: {
+                startActivity(new Intent(this, SendCoinsActivity.class));
+                break;
+            }
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

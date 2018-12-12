@@ -19,9 +19,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.JsonObject;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
@@ -69,8 +73,6 @@ public class Wallet extends AppCompatActivity {
            if not, clear all the coins from the wallet and Firestore
          */
         if (MapActivity.downloadDate.equals(MapActivity.currentDate)) {
-            databaseReference.collection("users").document(user.getUid())
-                    .update("wallet", "");
         }
 
         databaseReference.collection("users").document(user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -88,7 +90,7 @@ public class Wallet extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 String wallet = task.getResult().get("wallet").toString();
-                if (!wallet.equals("[]")) {
+                if (!wallet.equals("[]") && !wallet.equals("")) {
                     String allCoins = wallet.replace("[", "").replace("]", "");
                     String[] coinsString = allCoins.split(", ");
 
@@ -237,6 +239,69 @@ public class Wallet extends AppCompatActivity {
                         }
                     });
 
+
+                    //Send selected coins to another user
+                    Button sendCoins = findViewById(R.id.sendCoinWallet);
+                    sendCoins.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            for (Coin c : selectedCoins) {
+                                switch (c.getCurrency()) {
+                                    case "QUID":
+                                        gold += c.getValue() * MapActivity.QUIDrate;
+                                        break;
+
+                                    case "PENY":
+                                        gold += c.getValue() * MapActivity.PENYrate;
+                                        break;
+
+                                    case "DOLR":
+                                        gold += c.getValue() * MapActivity.DLRrate;
+                                        break;
+
+                                    case "SHIL":
+                                        gold += c.getValue() * MapActivity.SHILrate;
+                                        break;
+                                }
+
+                                coins.remove(c);
+                                String currency = c.getCurrency();
+                                double value = c.getValue();
+
+                                //Removes the selected coin from the senders' wallet
+                                databaseReference.collection("users").document(user.getUid())
+                                        .update("wallet", FieldValue.arrayRemove(currency + " " + value));
+
+                                /*
+                                Get a collectionReference to users, after that get the document
+                                which matches the recpients' username, get the goldAvaiable field
+                                and update it with the selected coins' value
+                                 */
+                                CollectionReference cf = databaseReference.collection("users");
+
+                                Query firstQuery = cf.whereEqualTo("username", SendCoinsActivity.usernameString);
+
+                                firstQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        String docId = "";
+                                        QuerySnapshot name = task.getResult();
+                                        List<DocumentSnapshot> snapshots = name.getDocuments();
+                                        for (DocumentSnapshot ds: snapshots) {
+                                            docId = ds.getId();
+                                            Double goldValue = Double.parseDouble(snapshots.get(0).get("goldAvailable").toString());
+                                            goldValue += gold;
+                                            databaseReference.collection("users").document(docId).update("goldAvailable", goldValue);
+                                        }
+                                    }
+                                });
+                            }
+
+                            imageAdapter.notifyDataSetChanged();
+
+                        }
+                    });
+
                     TextView sumCoins = findViewById(R.id.sumGold);
                     sumCoins.setText(String.format("Gold sum: %.2f", sumGold));
                 }
@@ -271,25 +336,6 @@ public class Wallet extends AppCompatActivity {
 
 
 }
-
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-
-//        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                coinsCollected = task.getResult().get("coinsCollected").toString();
-//                sumCoins = task.getResult().get("sumCoins").toString();
-//
-//
-//                TextView coinsCollectedValue = findViewById(R.id.collectedCoinsValue);
-//                coinsCollectedValue.setText(coinsCollected);
-//
-//                TextView moneyAvaiableText = findViewById(R.id.moneyAvaiableText);
-//                TextView moneyAvaiableValue = findViewById(R.id.moneyAvaiableValue);
-//                moneyAvaiableValue.setText(sumCoins);
-//            }
-//        });
 
 
 

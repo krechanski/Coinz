@@ -43,7 +43,11 @@
         </activity>
         <activity
             android:name=".Statistics"
-            android:label="Statistics">
+            android:label="Statistics"></activity>
+        <activity
+            android:name=".SendCoinsActivity"
+            android:label="Send coins to a user"
+            android:theme="@style/Theme.AppCompat.Dialog">
         </activity>
     </application>
 
