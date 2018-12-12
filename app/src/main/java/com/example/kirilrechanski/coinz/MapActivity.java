@@ -33,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.JsonParser;
 import com.mapbox.geojson.Feature;
@@ -99,9 +100,6 @@ public class MapActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     private FirebaseFirestore databaseReference;
     private FirebaseUser user;
-    private SensorManager mSensorManager;
-    private Sensor mStepCounterSensor;
-    private Sensor mStepDetectorSensor;
     static String currentDate;
     static Date date = new Date();
     static List<Feature> coinFeatures = new ArrayList<>();
@@ -271,7 +269,6 @@ public class MapActivity extends AppCompatActivity implements
             databaseReference.collection("users").document(user.getUid())
                     .update("steps", 0);
 
-            Wallet.coins.clear();
             DownloadFileTask downloadFileTask = new DownloadFileTask();
             downloadDate = currentDate;
             downloadFileTask.execute(url);
@@ -366,7 +363,9 @@ public class MapActivity extends AppCompatActivity implements
         locationEngine.requestLocationUpdates();
     }
 
-    //Remove markers which are less than 25 metres of the user's current location
+    /*
+    Counting of steps is done here, as well as removing a marker when it's <=25m away from the user
+     */
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
@@ -378,40 +377,22 @@ public class MapActivity extends AppCompatActivity implements
             databaseReference.collection("users").document(user.getUid()).update("steps", steps);
 
             List<Marker> markerList = map.getMarkers();
-            List<Double> coordinates;
             for (Marker marker : markerList) {
-
                 if (getDistanceFromCurrentPosition(location.getLatitude(), location.getLongitude(),
                         marker.getPosition().getLatitude(), marker.getPosition().getLongitude()) <= COLLECTING_DISTANCE) {
 
-                    //Create coin object from the markers and save it to a List in Wallet activity
-                    Coin coin = new Coin(marker.getTitle(), Double.parseDouble(marker.getSnippet()));
-                    Wallet.coins.add(coin);
                     map.removeMarker(marker);
 
                     //Saving collected coins in a local file for the Wallet Gridview
                     String currency = marker.getTitle();
                     String value = marker.getSnippet();
-                    Double latitude = marker.getPosition().getLatitude();
-                    Double longitude = marker.getPosition().getLongitude();
 
-
-                    Point point = Point.fromLngLat(longitude, latitude);
-                    coordinates = point.coordinates();
-                    Geometry geometry = (Geometry) point;
-
-                    Feature feature = Feature.fromGeometry(geometry);
-                    feature.addStringProperty("value", value);
-                    feature.addStringProperty("currency", currency);
-                    coinFeatures.add(feature);
-                    FeatureCollection featureCollection = FeatureCollection.fromFeatures(coinFeatures);
-                    String coinWallet = featureCollection.toJson();
-                    saveWalletCoins(coinWallet);
+                    databaseReference.collection("users").document(user.getUid())
+                            .update("wallet", FieldValue.arrayUnion(currency + " " + value));
                 }
             }
         }
     }
-
 
     //Used to calculate distance between the user and a target
     public static float getDistanceFromCurrentPosition(double lat1, double lng1, double lat2, double lng2) {
@@ -489,7 +470,6 @@ public class MapActivity extends AppCompatActivity implements
 
         //Save the uncollected markers in a local file so
         //you don't have to pick the same marker twice on resume
-
         List<Marker> remainedMarkers = map.getMarkers();
         List<Feature> features = new ArrayList<>();
         List<Double> coordinatesMarker;
@@ -533,18 +513,6 @@ public class MapActivity extends AppCompatActivity implements
         try {
             outputStream = getApplicationContext().openFileOutput("coinzmap.geojson", Context.MODE_PRIVATE);
             outputStream.write(currentMap.getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    //Method used to save the coinz map in local storage
-    public void saveWalletCoins(String currentCoins) {
-        FileOutputStream outputStream;
-        try {
-            outputStream = getApplicationContext().openFileOutput("walletcoins.geojson", Context.MODE_PRIVATE);
-            outputStream.write(currentCoins.getBytes());
             outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();

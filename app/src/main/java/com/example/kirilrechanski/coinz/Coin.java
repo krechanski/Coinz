@@ -1,7 +1,5 @@
 package com.example.kirilrechanski.coinz;
 
-import com.mapbox.mapboxsdk.annotations.Icon;
-
 public class Coin {
 
     private int icon;
@@ -11,7 +9,6 @@ public class Coin {
     public int getIcon() {
         return icon;
     }
-
 
     public String getCurrency() {
         return currency;

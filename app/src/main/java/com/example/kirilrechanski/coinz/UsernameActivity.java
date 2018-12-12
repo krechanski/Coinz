@@ -52,4 +52,8 @@ public class UsernameActivity extends AppCompatActivity {
 
     }
 
+    //Don't allow the user to go to the map when creating a username
+    @Override
+    public void onBackPressed() {
+    }
 }
