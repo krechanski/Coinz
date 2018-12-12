@@ -383,7 +383,8 @@ public class MapActivity extends AppCompatActivity implements
 
                     map.removeMarker(marker);
 
-                    //Saving collected coins in a local file for the Wallet Gridview
+                    //Get the currency and value from the marker and store them in Firestore
+                    //as an String[]
                     String currency = marker.getTitle();
                     String value = marker.getSnippet();
 

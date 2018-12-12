@@ -64,6 +64,15 @@ public class Wallet extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         databaseReference = FirebaseFirestore.getInstance();
+
+        /* If the current date is the same as the download date, read the coins from Firestore,
+           if not, clear all the coins from the wallet and Firestore
+         */
+        if (MapActivity.downloadDate.equals(MapActivity.currentDate)) {
+            databaseReference.collection("users").document(user.getUid())
+                    .update("wallet", "");
+        }
+
         databaseReference.collection("users").document(user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -73,6 +82,8 @@ public class Wallet extends AppCompatActivity {
             }
         });
 
+        //Get the wallet string with all the coins, parse it in order to get the currency and value
+        //and finally create a Coin object out of the two strings
         databaseReference.collection("users").document(user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -91,14 +102,6 @@ public class Wallet extends AppCompatActivity {
                         coins.add(coin);
                     }
 
-
-                    /* If the current date is the same as the download date, read the coins from local storage.
-                    If not, clear all the coins from the wallet and overwrite the local file.
-                    */
-
-                    String walletCoins = "";
-                    if (MapActivity.downloadDate.equals(MapActivity.currentDate)) {
-                    }
 
                     //Used when selecting which coins to deposit to the bank
                     List<Coin> selectedCoins = new ArrayList<>();
@@ -256,7 +259,7 @@ public class Wallet extends AppCompatActivity {
             }
 
             public double round(double value, int places) {
-                if (places < 0){
+                if (places < 0) {
                     return value;
                 }
                 BigDecimal bd = new BigDecimal(value);
