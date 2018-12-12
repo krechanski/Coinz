@@ -287,7 +287,7 @@ public class Wallet extends AppCompatActivity {
                                         String docId = "";
                                         QuerySnapshot name = task.getResult();
                                         List<DocumentSnapshot> snapshots = name.getDocuments();
-                                        for (DocumentSnapshot ds: snapshots) {
+                                        for (DocumentSnapshot ds : snapshots) {
                                             docId = ds.getId();
                                             Double goldValue = Double.parseDouble(snapshots.get(0).get("goldAvailable").toString());
                                             goldValue += gold;
@@ -333,8 +333,6 @@ public class Wallet extends AppCompatActivity {
             }
         });
     }
-
-
 }
 
 
