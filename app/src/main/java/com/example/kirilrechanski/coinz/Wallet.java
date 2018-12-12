@@ -48,6 +48,7 @@ public class Wallet extends AppCompatActivity {
 
     //List which stores collected coins
     private List<Coin> coins = new ArrayList<>();
+    private List<String> notifications = new ArrayList<>();
     static double gold = 0;
     public List<Feature> features = new ArrayList<>();
     private FirebaseAuth mAuth;
@@ -64,7 +65,7 @@ public class Wallet extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //Get the current user.
+        //Get the current user and initialize Firebase.
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         databaseReference = FirebaseFirestore.getInstance();
@@ -72,7 +73,9 @@ public class Wallet extends AppCompatActivity {
         /* If the current date is the same as the download date, read the coins from Firestore,
            if not, clear all the coins from the wallet and Firestore
          */
-        if (MapActivity.downloadDate.equals(MapActivity.currentDate)) {
+        if (!MapActivity.downloadDate.equals(MapActivity.currentDate)) {
+            databaseReference.collection("users").document(user.getUid()).update("wallet", "");
+            databaseReference.collection("users").document(user.getUid()).update("coinsLeft", "25");
         }
 
         databaseReference.collection("users").document(user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

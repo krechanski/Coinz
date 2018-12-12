@@ -76,6 +76,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.example.kirilrechanski.coinz.DownloadCompleteRunner.geoJsonString;
@@ -192,9 +193,21 @@ public class MapActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.nav_drawer, menu);
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        assert user != null;
+        DocumentReference docRef = db.collection("users").document(user.getUid());
+        docRef.get().addOnCompleteListener(task -> {
+            if (Objects.requireNonNull(task.getResult()).contains("hasNotification")) {
+                if (Objects.requireNonNull(task).getResult().getBoolean("hasNotification")) {
+                    NavigationView navigationView = findViewById(R.id.nav_view);
+                    navigationView.getMenu().getItem(0).setIconTintMode(null).setIcon(R.drawable.has_notification_icon);
+                }
+            }
+        });
         return true;
     }
 
@@ -240,6 +253,16 @@ public class MapActivity extends AppCompatActivity implements
                 startActivity(new Intent(this, SendCoinsActivity.class));
                 break;
             }
+
+            case R.id.nav_notifications: {
+                NavigationView navigationView = findViewById(R.id.nav_view);
+                navigationView.getMenu().getItem(0).setIconTintMode(null).setIcon(R.drawable.notification_icon);
+                databaseReference.collection("users").document(user.getUid()).update("hasNotification", false);
+                startActivity(new Intent(this, NotificationsActivity.class));
+                break;
+            }
+
+
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

@@ -55,6 +55,7 @@ public class SendCoinsWallet extends AppCompatActivity {
     private FirebaseUser user;
     int coinsLeftNum = 0;
     double goldAvaiable = 0;
+    String sendersUsername = "";
 
 
     @Override
@@ -78,6 +79,7 @@ public class SendCoinsWallet extends AppCompatActivity {
         databaseReference.collection("users").document(user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                sendersUsername = task.getResult().get("username").toString();
                 coinsLeftNum = Integer.parseInt(task.getResult().get("coinsLeft").toString());
                 TextView coinsLeft = findViewById(R.id.coinsLeftTextSendCoins);
                 coinsLeft.setText(String.format("Coins left: %d", coinsLeftNum));
@@ -227,11 +229,11 @@ public class SendCoinsWallet extends AppCompatActivity {
                                                     databaseReference.collection("users").document(user.getUid())
                                                             .update("wallet", FieldValue.arrayRemove(currency + " " + value));
 
-                                            /*
-                                            Get a collectionReference to users, after that get the document
-                                            which matches the recpients' username, get the goldAvaiable field
-                                            and update it with the selected coins' value
-                                             */
+                                                    /*
+                                                    Get a collectionReference to users, after that get the document
+                                                    which matches the recpients' username, get the goldAvaiable field
+                                                    and update it with the selected coins' value
+                                                     */
                                                     CollectionReference cf = databaseReference.collection("users");
 
                                                     Query firstQuery = cf.whereEqualTo("username", SendCoinsActivity.usernameString);
@@ -248,6 +250,11 @@ public class SendCoinsWallet extends AppCompatActivity {
                                                                 goldValue += gold;
                                                                 databaseReference.collection("users")
                                                                         .document(docId).update("goldAvailable", goldValue);
+                                                                databaseReference.collection("users").document(docId)
+                                                                        .update("notifications",
+                                                                                FieldValue.arrayUnion(sendersUsername + " sent you " + goldValue + " gold! :)"));
+                                                                databaseReference.collection("users")
+                                                                        .document(docId).update("hasNotification", true);
                                                             }
                                                         }
                                                     });

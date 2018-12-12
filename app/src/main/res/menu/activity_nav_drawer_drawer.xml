@@ -5,6 +5,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_notifications"
+            android:icon="@drawable/notification_icon"
+            android:title="Notifications" />
+        <item
             android:id="@+id/nav_bank"
             android:icon="@drawable/bank"
             android:title="Bank" />
@@ -26,16 +30,6 @@
             android:icon="@drawable/ic_menu_send"
             android:title="Send coins" />
     </group>
-
-    <!--<item android:title="">-->
-        <!--<menu>-->
-            <!--<item-->
-                <!--android:id="@+id/nav_share"-->
-                <!--android:icon="@drawable/ic_menu_share"-->
-                <!--android:title="Share coins" />-->
-
-        <!--</menu>-->
-    <!--</item>-->
 
     <group
         android:id="@+id/menu_bottom"
