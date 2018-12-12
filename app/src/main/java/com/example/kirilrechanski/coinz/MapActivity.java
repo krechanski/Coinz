@@ -82,7 +82,7 @@ import static com.example.kirilrechanski.coinz.DownloadCompleteRunner.geoJsonStr
 
 
 public class MapActivity extends AppCompatActivity implements
-        OnMapReadyCallback, LocationEngineListener, PermissionsListener, NavigationView.OnNavigationItemSelectedListener{
+        OnMapReadyCallback, LocationEngineListener, PermissionsListener, NavigationView.OnNavigationItemSelectedListener {
 
     private final String TAG = "MapActivity";
     private final String PREFERENCE_FILE = "MyPrefsFile"; //For storing preferences
@@ -445,7 +445,15 @@ public class MapActivity extends AppCompatActivity implements
         mapView.onStart();
         if (locationLayerPlugin != null) {
             locationLayerPlugin.onStart();
+
+            try {
+                locationEngine.requestLocationUpdates();
+            } catch (SecurityException ignored) {
+            }
+            locationEngine.addLocationEngineListener(this);
+
         }
+
 
         // Restore preferences
         SharedPreferences settings = getSharedPreferences(PREFERENCE_FILE,
@@ -472,6 +480,8 @@ public class MapActivity extends AppCompatActivity implements
         super.onStop();
         if (locationLayerPlugin != null) {
             locationLayerPlugin.onStart();
+            locationEngine.removeLocationEngineListener(this);
+            locationEngine.removeLocationUpdates();
         }
 
         //Save the uncollected markers in a local file so
