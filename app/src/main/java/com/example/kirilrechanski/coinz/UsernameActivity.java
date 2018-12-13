@@ -13,7 +13,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
-public class UsernameActivity extends AppCompatActivity {
+public class    UsernameActivity extends AppCompatActivity {
 
     /*
     The user sets his username which is linked with his email

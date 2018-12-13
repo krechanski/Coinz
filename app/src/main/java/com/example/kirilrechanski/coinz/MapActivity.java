@@ -455,7 +455,6 @@ public class MapActivity extends AppCompatActivity implements
                             databaseReference.collection("users").document(user.getUid())
                                     .update("coinsLeftInBoosterMode", coinsLeftInBoosterMode);
                         } else {
-                            coinsLeft--;
                             databaseReference.collection("users").document(user.getUid())
                                     .update("valueBoosterEnabled", false);
                             map.removeMarker(marker);
