@@ -105,7 +105,7 @@ public class LogInActivity extends AppCompatActivity implements
                             mDatabase.collection("users").document(currentUser.getUid())
                                     .set(new User(email,0, 25,0,0,
                                             new ArrayList<>(), new ArrayList<>(), false,
-                                            false, 5));
+                                            false, 5, false));
 
                         }
                         startActivity(new Intent(LogInActivity.this, UsernameActivity.class));

@@ -11,16 +11,13 @@ class User {
     public List<String> wallet;
     public List<String> notifications;
     public boolean hasNotification;
-    public boolean boosterEnabled;
+    public boolean valueBoosterEnabled;
+    public boolean distanceBoosterEnabled;
     public int coinsLeftInBoosterMode;
 
-    public User() {
-        // Default constructor required for calls to DataSnapshot.getValue(User.class)
-    }
-
     public User(String email, int goldAvailable, int coinsLeft, int steps, float totalDistanceWalked,
-                List<String> wallet, List<String> notifications, boolean hasNotification, boolean boosterEnabled,
-                int coinsLeftInBoosterMode) {
+                List<String> wallet, List<String> notifications, boolean hasNotification, boolean valueBoosterEnabled,
+                int coinsLeftInBoosterMode, boolean distanceBoosterEnabled) {
         this.email = email;
         this.coinsLeft = coinsLeft;
         this.goldAvailable = goldAvailable;
@@ -29,7 +26,8 @@ class User {
         this.wallet = wallet;
         this.notifications = notifications;
         this.hasNotification = hasNotification;
-        this.boosterEnabled = boosterEnabled;
+        this.valueBoosterEnabled = valueBoosterEnabled;
         this.coinsLeftInBoosterMode = coinsLeftInBoosterMode;
+        this.distanceBoosterEnabled = distanceBoosterEnabled;
     }
 }
