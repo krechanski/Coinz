@@ -27,7 +27,7 @@
         android:hint="Enter username"
         android:layout_gravity="center"
         android:inputType="text"
-        />
+        tools:ignore="HardcodedText" />
 
     <Button
         android:id="@+id/sendButton"
@@ -35,6 +35,7 @@
         android:layout_height="wrap_content"
         android:text="Next"
         app:layout_anchor="@+id/include"
-        app:layout_anchorGravity="bottom|center" />
+        app:layout_anchorGravity="bottom|center"
+        tools:ignore="HardcodedText" />
 
 </android.support.design.widget.CoordinatorLayout>

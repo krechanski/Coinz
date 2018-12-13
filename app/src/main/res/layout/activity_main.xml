@@ -28,13 +28,15 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/title_bottom_margin"
             android:text="Welcome to Coinz"
-            android:theme="@style/ThemeOverlay.MyTitleText" />
+            android:theme="@style/ThemeOverlay.MyTitleText"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/status"
             style="@style/ThemeOverlay.MyTextDetail"
             android:textSize="20sp"
-            android:text="Please sign in below" />
+            android:text="Please sign in below"
+            tools:ignore="HardcodedText" />
 
     </LinearLayout>
 

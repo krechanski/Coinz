@@ -13,7 +13,8 @@
             android:id="@+id/coinMarker"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            tools:ignore="ContentDescription" />
 
     </FrameLayout>
 

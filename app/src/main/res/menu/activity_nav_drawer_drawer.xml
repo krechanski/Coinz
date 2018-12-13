@@ -7,28 +7,34 @@
         <item
             android:id="@+id/nav_notifications"
             android:icon="@drawable/notification_icon"
-            android:title="Notifications" />
+            android:title="Notifications"
+            tools:ignore="HardcodedText" />
         <item
             android:id="@+id/nav_bank"
             android:icon="@drawable/bank"
-            android:title="Bank" />
+            android:title="Bank"
+            tools:ignore="HardcodedText" />
         <item
             android:id="@+id/nav_stats"
             android:icon="@drawable/stats_icon"
-            android:title="Statistics" />
+            android:title="Statistics"
+            tools:ignore="HardcodedText" />
         <item
             android:id="@+id/nav_boosters"
             android:icon="@drawable/boosts_icon"
-            android:title="Boosters" />
+            android:title="Boosters"
+            tools:ignore="HardcodedText" />
         <item
             android:id="@+id/nav_wallet"
             android:icon="@drawable/wallet_icon"
-            android:title="Wallet" />
+            android:title="Wallet"
+            tools:ignore="HardcodedText" />
 
         <item
             android:id="@+id/nav_send_coin"
             android:icon="@drawable/ic_menu_send"
-            android:title="Send coins" />
+            android:title="Send coins"
+            tools:ignore="HardcodedText" />
     </group>
 
     <group
@@ -38,7 +44,8 @@
         <item
             android:id="@+id/nav_signOut"
             android:icon="@drawable/sign_out"
-            android:title="Sign out" >
+            android:title="Sign out"
+            tools:ignore="HardcodedText">
         </item>
     </group>
 </menu>

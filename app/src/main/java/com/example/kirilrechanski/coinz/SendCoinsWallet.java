@@ -2,6 +2,7 @@ package com.example.kirilrechanski.coinz;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -255,6 +256,10 @@ public class SendCoinsWallet extends AppCompatActivity {
                 BigDecimal bd = new BigDecimal(value);
                 bd = bd.setScale(places, BigDecimal.ROUND_HALF_UP);
                 return bd.doubleValue();
+            }
+
+            public void onBackPressed() {
+                startActivity(new Intent(SendCoinsWallet.this, MapActivity.class));
             }
         });
     }

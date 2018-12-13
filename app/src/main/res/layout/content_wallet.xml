@@ -73,7 +73,8 @@
         app:layout_constraintHorizontal_bias="0.437"
         app:layout_constraintStart_toEndOf="@+id/markAll"
         app:layout_constraintTop_toBottomOf="@+id/gridview"
-        app:layout_constraintVertical_bias="0.258" />
+        app:layout_constraintVertical_bias="0.258"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/coinsLeftText"
@@ -92,7 +93,8 @@
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="SpUsage" />
 
     <TextView
         android:id="@+id/sumGold"
@@ -110,7 +112,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/coinsLeftText"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="SpUsage" />
 
 
 </android.support.constraint.ConstraintLayout>
