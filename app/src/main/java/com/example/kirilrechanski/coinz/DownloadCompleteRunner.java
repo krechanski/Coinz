@@ -22,8 +22,8 @@ public class DownloadCompleteRunner {
     /*
        Initially save the downloaded string map into geoJsonString. After that create a FeatureCollection,
        List of feature and list of coordinates. Start looping through each feature and save its geometry, coordinates,
-       value and currency. After each iteration place a marker on the map with the title, snippet, position and rounded
-       to %.2f value.
+       value and currency. After each iteration place a marker on the map with the title,
+       snippet, position and rounded to %.2f value.
      */
 
     @SuppressLint("DefaultLocale")

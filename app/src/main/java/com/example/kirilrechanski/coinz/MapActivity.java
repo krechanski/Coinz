@@ -25,6 +25,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -55,7 +57,6 @@ import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 
 
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -70,8 +71,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-
-
 public class MapActivity extends AppCompatActivity implements
         OnMapReadyCallback, LocationEngineListener, PermissionsListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -84,10 +83,14 @@ public class MapActivity extends AppCompatActivity implements
     private PermissionsManager permissionsManager;
     private LocationEngine locationEngine;
     private LocationLayerPlugin locationLayerPlugin;
+    private float COLLECTING_DISTANCE = 25;
     private Location originLocation;
     static String downloadDate = ""; //Format: yyy/mm/dd
     private FirebaseFirestore databaseReference;
     private FirebaseUser user;
+    static boolean boosterEnabled;
+    private int coinsLeftInBoosterMode = 0;
+    private int coinsLeft = 0;
     static String currentDate;
     static Date date = new Date();
     static List<Feature> coinFeatures = new ArrayList<>();
@@ -126,6 +129,7 @@ public class MapActivity extends AppCompatActivity implements
         //Get the email of current user.
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+        databaseReference = FirebaseFirestore.getInstance();
 
 
         mapView = findViewById(R.id.mapView);
@@ -164,6 +168,13 @@ public class MapActivity extends AppCompatActivity implements
                     Log.d("Error", "get username failed with ", task.getException());
                 }
             }
+        });
+
+        //Check if the user is still in boosterMode and retreive how many coins are left in the booster
+        databaseReference.collection("users").document(user.getUid()).get().addOnCompleteListener(task -> {
+            boosterEnabled = Boolean.parseBoolean(task.getResult().get("boosterEnabled").toString());
+            coinsLeftInBoosterMode = Integer.parseInt(task.getResult().get("coinsLeftInBoosterMode").toString());
+            coinsLeft = Integer.parseInt(task.getResult().get("coinsLeft").toString());
         });
     }
 
@@ -245,6 +256,11 @@ public class MapActivity extends AppCompatActivity implements
                 navigationView.getMenu().getItem(0).setIconTintMode(null).setIcon(R.drawable.notification_icon);
                 databaseReference.collection("users").document(user.getUid()).update("hasNotification", false);
                 startActivity(new Intent(this, NotificationsActivity.class));
+                break;
+            }
+
+            case R.id.nav_boosters: {
+                startActivity(new Intent(this, BoostersActivity.class));
                 break;
             }
 
@@ -391,19 +407,63 @@ public class MapActivity extends AppCompatActivity implements
 
             List<Marker> markerList = map.getMarkers();
             for (Marker marker : markerList) {
-                float COLLECTING_DISTANCE = 25;
                 if (getDistanceFromCurrentPosition(location.getLatitude(), location.getLongitude(),
                         marker.getPosition().getLatitude(), marker.getPosition().getLongitude()) <= COLLECTING_DISTANCE) {
 
-                    map.removeMarker(marker);
+                    /*If the valueBooster is enabled double the value of the coin and bank it,
+                    decrement coinsLeftInBoosterMode and update fields in Firestore. Else
+                    decrement coinsLeft, remove the coin from the map, and update wallet and coinsLeft
+                    in Firestore as well.
+                    */
+                    if (boosterEnabled == true && coinsLeftInBoosterMode != 0) {
+                        Coin c = new Coin(marker.getTitle(), (Double.parseDouble(marker.getSnippet())) * 2);
+                        double doubleCoinValueGold = 0;
+                        switch (marker.getTitle()) {
+                            case "DOLR": {
+                                doubleCoinValueGold = c.getValue() * DLRrate;
+                                break;
+                            }
 
-                    //Get the currency and value from the marker and store them in Firestore
-                    //as an String[]
-                    String currency = marker.getTitle();
-                    String value = marker.getSnippet();
+                            case "QUID": {
+                                doubleCoinValueGold = c.getValue() * QUIDrate;
+                                break;
+                            }
 
-                    databaseReference.collection("users").document(user.getUid())
-                            .update("wallet", FieldValue.arrayUnion(currency + " " + value));
+                            case "PENY": {
+                                doubleCoinValueGold = c.getValue() * PENYrate;
+                                break;
+                            }
+
+                            case "SHIL": {
+                                doubleCoinValueGold = c.getValue() * SHILrate;
+                                break;
+                            }
+                        }
+
+                        coinsLeftInBoosterMode--;
+                        databaseReference.collection("users").document(user.getUid())
+                                .update("goldAvailable", doubleCoinValueGold);
+                        databaseReference.collection("users").document(user.getUid())
+                                .update("coinsLeftInBoosterMode", coinsLeftInBoosterMode);
+                    }
+
+                    else{
+                        coinsLeft--;
+                        databaseReference.collection("users").document(user.getUid())
+                                .update("boosterEnabled", false);
+                        map.removeMarker(marker);
+
+                        //Get the currency and value from the marker and store them in Firestore
+                        //as an String[]
+                        String currency = marker.getTitle();
+                        String value = marker.getSnippet();
+
+                        databaseReference.collection("users").document(user.getUid())
+                                .update("wallet", FieldValue.arrayUnion(currency + " " + value));
+                        databaseReference.collection("users").document(user.getUid())
+                                .update("coinsLeft", coinsLeft);
+                    }
+
                 }
             }
         }
