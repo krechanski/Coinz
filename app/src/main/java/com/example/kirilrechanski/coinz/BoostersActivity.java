@@ -22,8 +22,8 @@ public class BoostersActivity extends AppCompatActivity {
     private FirebaseFirestore databaseReference;
     private FirebaseUser user;
     private double gold;
-    private final int VALUE_BOOSTER_PRICE = 800;
-    private final int VALUE_COLLECTING_DISTANCE_PRICE = 2500;
+    private int VALUE_BOOSTER_PRICE = 800;
+    private int VALUE_COLLECTING_DISTANCE_PRICE = 2500;
 
     @SuppressLint("DefaultLocale")
     @Override

@@ -220,6 +220,9 @@ public class SendCoinsWallet extends AppCompatActivity {
                                                                 FieldValue.arrayUnion(sendersUsername + " sent you " + goldValue + " gold! :)"));
                                                 databaseReference.collection("users")
                                                         .document(docId).update("hasNotification", true);
+                                                Toast.makeText(SendCoinsWallet.this,
+                                                        String.format("Sent %.2f gold to %s", goldValue, SendCoinsActivity.usernameString)
+                                                        , Toast.LENGTH_SHORT).show();
                                             }
                                         });
                                     }
