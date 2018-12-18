@@ -9,3 +9,9 @@ The objective of the game is to collect coins in three different currencies (**D
 
 The application uses Firebase Firestore Database and Authentication to guarantee enjoyable user experience and data persistance.
 
+<img src="screenshots/LogInScreen.png" alt="Login" align="left" width="200"/>
+
+<p align="center">
+<img src="screenshots/usernameActivity.png" alt="Username"  width="198"/>
+
+<img src="screenshots/completed_songs.png" alt="Completed Songs" align="right" width="200"/>
