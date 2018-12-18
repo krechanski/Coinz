@@ -52,4 +52,5 @@ Sending coins is done when the player has banked his **25 coins** for the day. F
 
 <img src="screenshots/SendCoinsWallet.png" alt="Booster bouht" align="right"  width="200"/>
 
-<img src="screenshots/SendCoinsSuccessfull.png" alt="Send Coins Tab" align="left" width="200"/>
+<p align = "left"/>
+<img src="screenshots/SendCoinsSuccessfull.png" alt="Send Coins Tab" width="200"/>
