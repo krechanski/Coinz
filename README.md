@@ -36,6 +36,7 @@ The player can purchase boosters which give them the ability to collect coins mo
 
 <img src="screenshots/BoosterBought.png" alt="Booster bouht" align="right"  width="200"/>
 
+
 ### Sending coins
 
 Sending coins is done when the player has banked his **25 coins** for the day. From the navigation drawer he clicks **Send coins** from where a *PopUp* is displayed, asking for the ricipient's *username*. After that, he is directed to the *Wallet* where he can choose coins and click *Send Coins*. If it is successfull a message is displayed showing how much gold they've sent and to whom.
