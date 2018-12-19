@@ -32,12 +32,14 @@ The statistics tab displays the distance, the player has walked today, as well a
 
 The player can purchase boosters which give them the ability to collect coins more easily.
 
-<img src="screenshots/navDrawerBoosters.png" alt="Boosters Tab" align="left" width="200"/>
+
+
+<img src="screenshots/navDrawerBoosters.png" alt="Boosters tab" align="left" width="200"/>
 
 <p align = "center"/>
-<img src="screenshots/BoosterScreen.png" alt="Booster Screen" width="200"/>
+<img src="screenshots/BoosterScreen.png" alt="Booster screen" width="200"/>
 
-<img src="screenshots/BoosterBought.png" alt="Booster bought" allign="right"  width="200"/>
+<img src="screenshots/BoosterBought.png" alt="Booster bought" align="right" width="200"/>
 
 
 ### Sending coins
