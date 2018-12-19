@@ -37,8 +37,7 @@ The player can purchase boosters which give them the ability to collect coins mo
 <p align = "center"/>
 <img src="screenshots/BoosterScreen.png" alt="Booster Screen" width="200"/>
 
-<p align = "left"/>
-<img src="screenshots/BoosterBought.png" alt="Booster bouht"  width="200"/>
+<img src="screenshots/BoosterBought.png" alt="Booster bought" allign="right"  width="200"/>
 
 
 ### Sending coins
