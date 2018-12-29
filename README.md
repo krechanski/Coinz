@@ -7,7 +7,7 @@ The application uses Firebase Firestore Database and Authentication to guarantee
 <img src="screenshots/LogInScreen.png" alt="Login" align="left" width="200"/>
 
 <p align = "center"/>
-<img src="screenshots" alt="Username" width="200"/>
+<img src="screenshots/usernameActivity" alt="Username" width="200"/>
 
 <img src="screenshots/mapActivity.png" alt="Map" align="right" width="200"/>
 
