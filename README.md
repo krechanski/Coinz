@@ -1,4 +1,4 @@
-## Android location based app written in Java
+# Android location based app written in Java
 
 The objective of the game is to collect coins in three different currencies (**DOLR, SHIL, PENY, QUID**) located around the main campus of the University of Edinburgh. The user then can exchange the collected coins for gold, which is stored into the bank.
 
